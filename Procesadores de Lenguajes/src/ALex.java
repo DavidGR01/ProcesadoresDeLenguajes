@@ -22,7 +22,7 @@ public class ALex {
 		int estado = 0;
 		char car = (char) br.read();
 		String accion = null;
-		//Mientras no leamos EOF
+		// Mientras no leamos EOF
 		while (car != -1) {
 
 			do {
@@ -41,7 +41,7 @@ public class ALex {
 
 			} while (estado < 8);
 		}
-//shsh
+
 		br.close();
 	}
 
