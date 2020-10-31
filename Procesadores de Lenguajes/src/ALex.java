@@ -41,7 +41,7 @@ public class ALex {
 
 			} while (estado < 8);
 		}
-
+//shsh
 		br.close();
 	}
 
