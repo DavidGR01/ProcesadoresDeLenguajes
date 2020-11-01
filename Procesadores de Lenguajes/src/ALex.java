@@ -219,6 +219,7 @@ public class ALex {
 			return 1;
 		if (-1 < estado && estado < 3 &&c >= 48 && c <= 57)
 			return 2;
+
 		if (estado == 4 && c != 10) 
 			return 3;
 		if (estado == 5 && c != 39)
