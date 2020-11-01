@@ -23,8 +23,8 @@ public class TablaSimbolos {
 	}
 
 	/**
-	 * Inserta en ambas estructuras de datos y devuelve la nueva posicion. -1 Si
-	 * falla algo aunque no debería
+	 * Inserta en ambas estructuras de datos y devuelve la nueva posicion. 
+	 * -1 Si falla algo aunque no debería
 	 * 
 	 * @param ent
 	 * @return
