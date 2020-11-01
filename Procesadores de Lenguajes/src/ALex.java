@@ -46,8 +46,60 @@ public class ALex {
 	}
 
 	private static void rellenarMatriz() {
-		// Inicialiar todo a -1 y null
+
+		// Inicialiar todo a -2 y null
+		for (int i = 0; i < matriz.length; i++) {
+			for (int j = 0; j < matriz[0].length; j++)
+				matriz[i][j] = new Pair<Integer, String>(-2, null);
+		}
+
 		// Rellenar con los datos buenos
+
+		// Primera fila
+		matriz[0][0] = new Pair<Integer, String>(0, "A");
+		matriz[0][1] = new Pair<Integer, String>(1, "B");
+		matriz[0][2] = new Pair<Integer, String>(3, "C");
+		matriz[0][8] = new Pair<Integer, String>(6, "A");
+		matriz[0][9] = new Pair<Integer, String>(11, "J");
+		matriz[0][10] = new Pair<Integer, String>(12, "K");
+		matriz[0][11] = new Pair<Integer, String>(13, "L");
+		matriz[0][12] = new Pair<Integer, String>(14, "M");
+		matriz[0][13] = new Pair<Integer, String>(15, "N");
+		matriz[0][14] = new Pair<Integer, String>(16, "Ñ");
+		matriz[0][15] = new Pair<Integer, String>(17, "O");
+		matriz[0][16] = new Pair<Integer, String>(18, "P");
+		matriz[0][17] = new Pair<Integer, String>(19, "Q");
+		matriz[0][18] = new Pair<Integer, String>(3, "A");
+		matriz[0][19] = new Pair<Integer, String>(5, "B");
+
+		// Segunda fila
+		matriz[1][1] = new Pair<Integer, String>(1, "G");
+		matriz[1][2] = new Pair<Integer, String>(1, "G");
+		matriz[1][5] = new Pair<Integer, String>(7, "H");
+		matriz[1][7] = new Pair<Integer, String>(1, "G");
+
+		// Tercera fila
+		matriz[2][2] = new Pair<Integer, String>(3, "D");
+		matriz[2][6] = new Pair<Integer, String>(8, "E");
+
+		// Cuarta fila
+		matriz[3][18] = new Pair<Integer, String>(4, "A");
+
+		// Quinta fila
+		matriz[4][3] = new Pair<Integer, String>(4, "G");
+		matriz[4][20] = new Pair<Integer, String>(0, "R");
+
+		// Sexta fila
+		matriz[4][3] = new Pair<Integer, String>(4, "G");
+		matriz[4][20] = new Pair<Integer, String>(0, "R");
+
+		// Septima fila
+		matriz[5][4] = new Pair<Integer, String>(5, "G");
+		matriz[5][19] = new Pair<Integer, String>(9, "I");
+
+		// Octava fila
+		matriz[6][8] = new Pair<Integer, String>(10, "F");
+
 	}
 
 	/**
