@@ -59,7 +59,12 @@ public class ALex {
 						car = (char) br.read();
 						break;
 					case "E":
+
+						//Revisar rango 
+						 tokenEntero = new Pair<String,Integer>("entero",valor);
+
 						tokenEntero = new Pair<String, Integer>("entero", valor);
+
 						System.out.println(tokenEntero);
 						car = (char) br.read();
 						break;
@@ -74,14 +79,24 @@ public class ALex {
 						break;
 					case "H":
 						lexema += car;
+
+						//Revisar que  no es uns palabra reservada
+						tokenId = new Pair<String,Integer>("id",posTS(lexema));
+
 						tokenId = new Pair<String, Integer>("id", posTS(lexema));
+
 						System.out.println(tokenId);
 						estado = 0;
 						car = (char) br.read();
 						break;
 					case "I":
 						lexema += car;
+
+						//Revisar Ca
+						tokenCadena = new Pair<String,String>("cadena",lexema);
+
 						tokenCadena = new Pair<String, String>("cadena", lexema);
+
 						System.out.println(tokenCadena);
 						car = (char) br.read();
 						break;
