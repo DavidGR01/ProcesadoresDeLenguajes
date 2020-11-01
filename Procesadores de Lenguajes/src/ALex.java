@@ -15,7 +15,7 @@ public class ALex {
 
 		// Vamos leyendo el archivo
 
-		File f = new File(args[0]); // El archivo tiene que estar en la carpeta de files
+		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta de files
 		FileReader fr = new FileReader(f); // Creation of File Reader object
 		BufferedReader br = new BufferedReader(fr); // Creation of BufferedReader object
 
@@ -35,6 +35,7 @@ public class ALex {
 			do {
 
 				accion = matriz[estado][columna(estado, car)].getRight();
+				System.out.println(accion);
 				estado = matriz[estado][columna(estado, car)].getLeft();
 
 				if (estado == -1)
@@ -75,6 +76,7 @@ public class ALex {
 						lexema += car;
 						tokenId = new Pair<String, Integer>("id", posTS(lexema));
 						System.out.println(tokenId);
+						estado = 0;
 						car = (char) br.read();
 						break;
 					case "I":
@@ -133,7 +135,7 @@ public class ALex {
 					}
 				}
 
-			} while (estado < 8);
+			} while (estado < 7);
 		}
 
 		br.close();
@@ -152,7 +154,7 @@ public class ALex {
 		// Primera fila
 		matriz[0][0] = new Pair<Integer, String>(0, "A");
 		matriz[0][1] = new Pair<Integer, String>(1, "B");
-		matriz[0][2] = new Pair<Integer, String>(3, "C");
+		matriz[0][2] = new Pair<Integer, String>(2, "C");
 		matriz[0][8] = new Pair<Integer, String>(6, "A");
 		matriz[0][9] = new Pair<Integer, String>(11, "J");
 		matriz[0][10] = new Pair<Integer, String>(12, "K");
@@ -214,7 +216,7 @@ public class ALex {
 		// p:char-{'}
 		// r:o.c. - {d}
 		// q:o.c. - {l,_,d}
-		if (estado == 0 && (c == 9 || c == 32))
+		if (estado == 0 && (c == 9 || c == 32 || c == 10))
 			return 0;
 		if ((estado == 0 || estado == 1) && (c >= 65 && c <= 90) || (c >= 97 && c <= 122))
 			return 1;
@@ -259,7 +261,7 @@ public class ALex {
 			return 18;
 		if (estado == 5 && c == 39)
 			return 19;
-		if (c == -1)
+		if (estado == 4 && c == 10)
 			return 20;
 		return 5;
 	}
