@@ -154,7 +154,7 @@ public class ALex {
 		// Primera fila
 		matriz[0][0] = new Pair<Integer, String>(0, "A");
 		matriz[0][1] = new Pair<Integer, String>(1, "B");
-		matriz[0][2] = new Pair<Integer, String>(3, "C");
+		matriz[0][2] = new Pair<Integer, String>(2, "C");
 		matriz[0][8] = new Pair<Integer, String>(6, "A");
 		matriz[0][9] = new Pair<Integer, String>(11, "J");
 		matriz[0][10] = new Pair<Integer, String>(12, "K");
