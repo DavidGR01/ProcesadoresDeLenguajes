@@ -26,9 +26,9 @@ public class ALex {
 		String lexema = null;
 		int valor = 0;
 		Pair<String, String> tokenSimbolo = null, tokenIncrementador = null, tokenCadena = null;
-		Pair<String,Integer> tokenEntero = null, tokenId = null;
-		
-		//Mientras no leamos EOF
+		Pair<String, Integer> tokenEntero = null, tokenId = null;
+
+		// Mientras no leamos EOF
 
 		while (car != -1) {
 
@@ -54,16 +54,16 @@ public class ALex {
 						car = (char) br.read();
 						break;
 					case "D":
-						valor = valor*10 + Character.getNumericValue(car);
+						valor = valor * 10 + Character.getNumericValue(car);
 						car = (char) br.read();
 						break;
 					case "E":
-						 tokenEntero = new Pair<String,Integer>("entero",valor);
+						tokenEntero = new Pair<String, Integer>("entero", valor);
 						System.out.println(tokenEntero);
 						car = (char) br.read();
 						break;
 					case "F":
-						 tokenIncrementador = new Pair<String,String>("incrementador","-");
+						tokenIncrementador = new Pair<String, String>("incrementador", "-");
 						System.out.println(tokenIncrementador);
 						car = (char) br.read();
 						break;
@@ -73,58 +73,58 @@ public class ALex {
 						break;
 					case "H":
 						lexema += car;
-						tokenId = new Pair<String,Integer>("id",posTS(lexema));
+						tokenId = new Pair<String, Integer>("id", posTS(lexema));
 						System.out.println(tokenId);
 						car = (char) br.read();
 						break;
 					case "I":
 						lexema += car;
-						tokenCadena = new Pair<String,String>("cadena",lexema);
+						tokenCadena = new Pair<String, String>("cadena", lexema);
 						System.out.println(tokenCadena);
 						car = (char) br.read();
 						break;
 					case "J":
-						tokenSimbolo = new Pair<String,String>("abre-parentesis","-");
+						tokenSimbolo = new Pair<String, String>("abre-parentesis", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
 						break;
 					case "K":
-						tokenSimbolo = new Pair<String,String>("cierra-parentesis","-");
+						tokenSimbolo = new Pair<String, String>("cierra-parentesis", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
 						break;
 					case "L":
-						tokenSimbolo = new Pair<String,String>("abre-corchete","-");
+						tokenSimbolo = new Pair<String, String>("abre-corchete", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
 						break;
 					case "M":
-						tokenSimbolo = new Pair<String,String>("cierra-corchete","-");
+						tokenSimbolo = new Pair<String, String>("cierra-corchete", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
 						break;
 					case "N":
-						tokenSimbolo = new Pair<String,String>("menos","-");
+						tokenSimbolo = new Pair<String, String>("menos", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
 						break;
 					case "Ñ":
-						tokenSimbolo = new Pair<String,String>("menor-estricto","-");
+						tokenSimbolo = new Pair<String, String>("menor-estricto", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
 						break;
 					case "O":
-						tokenSimbolo = new Pair<String,String>("exclamación","-");
+						tokenSimbolo = new Pair<String, String>("exclamación", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
 						break;
 					case "P":
-						tokenSimbolo = new Pair<String,String>("punto-y-coma","-");
+						tokenSimbolo = new Pair<String, String>("punto-y-coma", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
 						break;
 					case "Q":
-						tokenSimbolo = new Pair<String,String>("igual","-");
+						tokenSimbolo = new Pair<String, String>("igual", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
 						break;
@@ -195,6 +195,7 @@ public class ALex {
 		matriz[6][8] = new Pair<Integer, String>(10, "F");
 
 	}
+
 	private static int posTS(String lexema) {
 		return 0;
 	}
@@ -213,41 +214,52 @@ public class ALex {
 		// p:char-{'}
 		// r:o.c. - {d}
 		// q:o.c. - {l,_,d}
-		if( estado == 0 && ( c == 9 || c == 32))
+		if (estado == 0 && (c == 9 || c == 32))
 			return 0;
-		if ((estado == 0 || estado == 1 ) &&(c >= 65 && c <= 90) || (c >= 97 && c <= 122))
+		if ((estado == 0 || estado == 1) && (c >= 65 && c <= 90) || (c >= 97 && c <= 122))
 			return 1;
-		if (-1 < estado && estado < 3 &&c >= 48 && c <= 57)
+		if (-1 < estado && estado < 3 && c >= 48 && c <= 57)
 			return 2;
 
-		if (estado == 4 && c != 10) 
+		if (estado == 4 && c != 10)
 			return 3;
 		if (estado == 5 && c != 39)
 			return 4;
 		if (estado == 2 && c < 48 && c > 57)
 			return 6;
-		if ( estado == 1 && c == 95)
+		if (estado == 1 && c == 95)
 			return 7;
-		if( (estado == 0 || estado == 6) && c == 43)
+		if ((estado == 0 || estado == 6) && c == 43)
 			return 8;
-		if(estado == 0) {
-			if(c == 40) return 9;
-			if( c == 41) return 10;
-			if( c == 123) return 11;
-			if( c == 125) return 12;
-			if( c == 45) return 13;
-			if( c == 60) return 14;
-			if( c == 33) return 15;
-			if( c == 59) return 16;
-			if( c == 61) return 17;
-			if( c == 47) return 18;
-			if( c == 39) return 119;
+		if (estado == 0) {
+			if (c == 40)
+				return 9;
+			if (c == 41)
+				return 10;
+			if (c == 123)
+				return 11;
+			if (c == 125)
+				return 12;
+			if (c == 45)
+				return 13;
+			if (c == 60)
+				return 14;
+			if (c == 33)
+				return 15;
+			if (c == 59)
+				return 16;
+			if (c == 61)
+				return 17;
+			if (c == 47)
+				return 18;
+			if (c == 39)
+				return 119;
 		}
-		if(estado == 3 && c == 47)
+		if (estado == 3 && c == 47)
 			return 18;
-		if(estado == 5 && c == 39)
+		if (estado == 5 && c == 39)
 			return 19;
-		if(c == -1)
+		if (c == -1)
 			return 20;
 		return 5;
 	}
