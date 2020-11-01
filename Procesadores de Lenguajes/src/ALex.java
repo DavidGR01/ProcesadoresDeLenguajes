@@ -96,7 +96,7 @@ public class ALex {
 					case "I":
 						lexema += car;
 
-						//Revisar Ca
+						//Revisar Cadena
 						tokenCadena = new Pair<String,String>("cadena",lexema);
 
 						tokenCadena = new Pair<String, String>("cadena", lexema);
