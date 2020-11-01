@@ -15,7 +15,7 @@ public class ALex {
 		rellenarMatriz();
 
 		// Vamos leyendo el archivo
-		//HOLA
+		//HOLA Y ADIOS
 		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta files
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
