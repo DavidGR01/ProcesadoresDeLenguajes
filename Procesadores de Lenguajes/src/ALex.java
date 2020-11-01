@@ -15,69 +15,72 @@ public class ALex {
 		rellenarMatriz();
 
 		// Vamos leyendo el archivo
-		
+
 		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta files
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
 
 		int estado = 0;
-		char car = (char) br.read();
+		int car = br.read();
 		String accion = null;
 
 		String lexema = null;
 		int valor = 0;
-		Pair<String, String> tokenSimbolo = null, tokenIncrementador = null, tokenCadena = null;
-		Pair<String, Integer> tokenEntero = null, tokenId = null;
+		// Pair<String, String> tokenSimbolo = null, tokenIncrementador = null,
+		// tokenCadena = null;
+		// Pair<String, Integer> tokenEntero = null, tokenId = null;
+		Pair<String, String> token = null;
 
 		// Mientras no leamos EOF
 
 		while (car != -1) {
 
 			do {
-
-				accion = matriz[estado][columna(estado, car)].getRight();
+				accion = matriz[estado][columna(estado, (char) car)].getRight();
 				System.out.println(accion);
-				estado = matriz[estado][columna(estado, car)].getLeft();
+				estado = matriz[estado][columna(estado, (char) car)].getLeft();
 
 				if (estado == -2)
 					System.out.println("Error!");
 				else {
 					switch (accion) {
 					case "A":
-						car = (char) br.read();
+						car = br.read();
 						break;
 					case "B":
 						lexema = "";
-						lexema += car;
-						car = (char) br.read();
+						lexema += (char) car;
+						car = br.read();
 						break;
 					case "C":
-						valor = Character.getNumericValue(car);
-						car = (char) br.read();
+						valor = Character.getNumericValue((char)car);
+						car = br.read();
 						break;
 					case "D":
-						valor = valor * 10 + Character.getNumericValue(car);
-						car = (char) br.read();
+						valor = valor * 10 + Character.getNumericValue((char)car);
+						car = br.read();
 						break;
 					case "E":
-						//Revisar rango 
-						tokenEntero = new Pair<String,Integer>("entero",valor);
-						System.out.println(tokenEntero);
-						car = (char) br.read();
+						// Revisar rango
+						token = new Pair<String, String>("entero", valor + "");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "F":
-						tokenIncrementador = new Pair<String, String>("incrementador", "-");
-						System.out.println(tokenIncrementador);
-						car = (char) br.read();
+						token = new Pair<String, String>("incrementador", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "G":
-						lexema += car;
-						car = (char) br.read();
+						lexema += (char) car;
+						car = br.read();
 						break;
 					case "H":
-						lexema += car;
+						lexema += (char)car;
 						/*
 						 * if ( tablaPR(lexema) =! null ) tokenId = new
 						 * Pair<String,Integer>(lexema,"-");
@@ -85,84 +88,93 @@ public class ALex {
 						// else {
 						int p = posTS(lexema);
 						// if ( p != null)
-						tokenId = new Pair<String, Integer>("id", p);
+						token = new Pair<String, String>("id", p + "");
 						// else
 						// p = insertarPS(new Entrada(lexema,null,));
-						tokenId = new Pair<String, Integer>("id", p);
-						car = (char) br.read();
+						car = br.read();
 						estado = 0;
-						System.out.println(tokenId);
+						System.out.println(token);
+						Tokens.guardarToken(token);
 						break;
 					case "I":
-						lexema += car;
+						lexema += (char) car;
 
-						//Revisar Cadena
-						tokenCadena = new Pair<String,String>("cadena",lexema);
+						// Revisar Cadena
+						token = new Pair<String, String>("cadena", lexema);
 
-						tokenCadena = new Pair<String, String>("cadena", lexema);
-
-						System.out.println(tokenCadena);
-						car = (char) br.read();
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "J":
-						tokenSimbolo = new Pair<String, String>("abre-parentesis", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("abre-parentesis", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "K":
-						tokenSimbolo = new Pair<String, String>("cierra-parentesis", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("cierra-parentesis", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "L":
-						tokenSimbolo = new Pair<String, String>("abre-corchete", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("abre-corchete", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "M":
-						tokenSimbolo = new Pair<String, String>("cierra-corchete", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("cierra-corchete", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "N":
-						tokenSimbolo = new Pair<String, String>("menos", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("menos", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "Ñ":
-						tokenSimbolo = new Pair<String, String>("menor-estricto", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("menor-estricto", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "O":
-						tokenSimbolo = new Pair<String, String>("exclamación", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("exclamación", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "P":
-						tokenSimbolo = new Pair<String, String>("punto-y-coma", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("punto-y-coma", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "Q":
-						tokenSimbolo = new Pair<String, String>("igual", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("igual", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "R":
-						tokenSimbolo = new Pair<String, String>("coma", "-");
-						System.out.println(tokenSimbolo);
-						car = (char) br.read();
+						token = new Pair<String, String>("coma", "-");
+						System.out.println(token);
+						Tokens.guardarToken(token);
+						car = br.read();
 						estado = 0;
 						break;
 					case "S":
@@ -170,9 +182,10 @@ public class ALex {
 					}
 				}
 
-			} while (estado < 7);
+			} while (estado < 7 && estado >= 0);
 		}
-
+		// TablaSimbolos.toFile();
+		Tokens.toFile();
 		br.close();
 	}
 
@@ -263,7 +276,7 @@ public class ALex {
 			return 3;
 		if (estado == 5 && c != 39)
 			return 4;
-		if (estado == 2 && c < 48 && c > 57)
+		if (estado == 2 && (c < 48 || c > 57))
 			return 6;
 		if (estado == 1 && c == 95)
 			return 7;

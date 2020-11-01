@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,16 +18,18 @@ public class TablaSimbolos {
 	 * @param str
 	 * @return
 	 */
-	private int buscarTS(String str) {
+	int buscarTS(String str) {
 		return map.get(str);
 	}
 
 	/**
-	 * Inserta en ambas estructuras de datos y devuelve la nueva posicion.-1 Si falla algo aunque no deberia
+	 * Inserta en ambas estructuras de datos y devuelve la nueva posicion. -1 Si
+	 * falla algo aunque no debería
+	 * 
 	 * @param ent
 	 * @return
 	 */
-	private int insertarTS(Entrada ent) {
+	int insertarTS(Entrada ent) {
 		// Ya deberia haberse comprobado esto pero bueno
 		if (buscarTS(ent.getLexema()) == -1)
 			return -1;
@@ -33,6 +37,18 @@ public class TablaSimbolos {
 		TS.add(ent);
 		map.put(ent.getLexema(), pos);
 		return pos;
+	}
+
+	/**
+	 * Guardamos el estado actual de la TS en el fichero TS.txt
+	 * 
+	 * @throws IOException
+	 */
+	static void toFile() throws IOException {
+		// Sobreescribe cualquier archivo anterior con el mismo nombre
+		FileWriter myWriter = new FileWriter("TS.txt");
+		myWriter.write("hola");
+		myWriter.close();
 	}
 
 }
