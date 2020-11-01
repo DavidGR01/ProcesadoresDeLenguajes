@@ -120,7 +120,7 @@ public class ALex {
 			return 1;
 		if (c >= 48 && c <= 57)
 			return 2;
-		if (estado == 19 && c != 10) // Renombrar estados PUTAS!
+		if (estado == 19 && c != 10)
 			return 3;
 		if (estado == 6 && c != 39)
 			return 4;
