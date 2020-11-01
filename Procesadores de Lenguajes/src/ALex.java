@@ -6,7 +6,8 @@ import java.util.HashMap;
 
 public class ALex {
 
-	static Pair<Integer, String>[][] matriz = new Pair[20][21];
+	@SuppressWarnings("unchecked")
+	static Pair<Integer, String>[][] matriz = new Pair[21][22];
 	static HashMap<String, Integer> columnas = new HashMap<>();
 
 	public static void main(String[] args) throws IOException {
@@ -15,9 +16,9 @@ public class ALex {
 
 		// Vamos leyendo el archivo
 
-		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta de files
-		FileReader fr = new FileReader(f); // Creation of File Reader object
-		BufferedReader br = new BufferedReader(fr); // Creation of BufferedReader object
+		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta files
+		FileReader fr = new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
 
 		int estado = 0;
 		char car = (char) br.read();
@@ -38,7 +39,7 @@ public class ALex {
 				System.out.println(accion);
 				estado = matriz[estado][columna(estado, car)].getLeft();
 
-				if (estado == -1)
+				if (estado == -2)
 					System.out.println("Error!");
 				else {
 					switch (accion) {
@@ -59,14 +60,17 @@ public class ALex {
 						car = (char) br.read();
 						break;
 					case "E":
+						// Revisar rango
 						tokenEntero = new Pair<String, Integer>("entero", valor);
 						System.out.println(tokenEntero);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "F":
 						tokenIncrementador = new Pair<String, String>("incrementador", "-");
 						System.out.println(tokenIncrementador);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "G":
 						lexema += car;
@@ -74,63 +78,90 @@ public class ALex {
 						break;
 					case "H":
 						lexema += car;
-						tokenId = new Pair<String, Integer>("id", posTS(lexema));
-						System.out.println(tokenId);
-						estado = 0;
+
+						/*
+						 * if ( tablaPR(lexema) =! null ) tokenId = new
+						 * Pair<String,Integer>(lexema,"-");
+						 */
+						// else {
+						int p = posTS(lexema);
+						// if ( p != null)
+						tokenId = new Pair<String, Integer>("id", p);
+						// else
+						// p = insertarPS(new Entrada(lexema,null,));
+						tokenId = new Pair<String, Integer>("id", p);
 						car = (char) br.read();
+						estado = 0;
+						System.out.println(tokenId);
 						break;
 					case "I":
 						lexema += car;
 						tokenCadena = new Pair<String, String>("cadena", lexema);
 						System.out.println(tokenCadena);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "J":
 						tokenSimbolo = new Pair<String, String>("abre-parentesis", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "K":
 						tokenSimbolo = new Pair<String, String>("cierra-parentesis", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "L":
 						tokenSimbolo = new Pair<String, String>("abre-corchete", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "M":
 						tokenSimbolo = new Pair<String, String>("cierra-corchete", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "N":
 						tokenSimbolo = new Pair<String, String>("menos", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "Ñ":
 						tokenSimbolo = new Pair<String, String>("menor-estricto", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "O":
 						tokenSimbolo = new Pair<String, String>("exclamación", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "P":
 						tokenSimbolo = new Pair<String, String>("punto-y-coma", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "Q":
 						tokenSimbolo = new Pair<String, String>("igual", "-");
 						System.out.println(tokenSimbolo);
 						car = (char) br.read();
+						estado = 0;
 						break;
 					case "R":
+						tokenSimbolo = new Pair<String, String>("coma", "-");
+						System.out.println(tokenSimbolo);
+						car = (char) br.read();
+						estado = 0;
+						break;
+					case "S":
 						break;
 					}
 				}
@@ -165,8 +196,9 @@ public class ALex {
 		matriz[0][15] = new Pair<Integer, String>(17, "O");
 		matriz[0][16] = new Pair<Integer, String>(18, "P");
 		matriz[0][17] = new Pair<Integer, String>(19, "Q");
-		matriz[0][18] = new Pair<Integer, String>(3, "A");
-		matriz[0][19] = new Pair<Integer, String>(5, "B");
+		matriz[0][18] = new Pair<Integer, String>(20, "R");
+		matriz[0][19] = new Pair<Integer, String>(3, "A");
+		matriz[0][20] = new Pair<Integer, String>(5, "B");
 
 		// Segunda fila
 		matriz[1][1] = new Pair<Integer, String>(1, "G");
@@ -175,7 +207,7 @@ public class ALex {
 		matriz[1][7] = new Pair<Integer, String>(1, "G");
 
 		// Tercera fila
-		matriz[2][2] = new Pair<Integer, String>(3, "D");
+		matriz[2][2] = new Pair<Integer, String>(2, "D");
 		matriz[2][6] = new Pair<Integer, String>(8, "E");
 
 		// Cuarta fila
@@ -187,7 +219,7 @@ public class ALex {
 
 		// Sexta fila
 		matriz[4][3] = new Pair<Integer, String>(4, "G");
-		matriz[4][20] = new Pair<Integer, String>(0, "R");
+		matriz[4][20] = new Pair<Integer, String>(0, "S");
 
 		// Septima fila
 		matriz[5][4] = new Pair<Integer, String>(5, "G");
@@ -252,10 +284,12 @@ public class ALex {
 				return 16;
 			if (c == 61)
 				return 17;
-			if (c == 47)
+			if (c == 44)
 				return 18;
+			if (c == 47)
+				return 19;
 			if (c == 39)
-				return 119;
+				return 20;
 		}
 		if (estado == 3 && c == 47)
 			return 18;
