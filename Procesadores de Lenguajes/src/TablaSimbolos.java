@@ -19,7 +19,8 @@ public class TablaSimbolos {
 	 * @return
 	 */
 	int buscarTS(String str) {
-		return map.get(str);
+		Integer pos = map.get(str);
+		return pos == null ? -1 : pos;
 	}
 
 	/**
