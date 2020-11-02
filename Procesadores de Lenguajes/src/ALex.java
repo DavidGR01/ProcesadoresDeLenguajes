@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,13 +10,15 @@ public class ALex {
 	@SuppressWarnings("unchecked")
 	static Pair<Integer, String>[][] matriz = new Pair[21][22];
 	static HashMap<String, Integer> columnas = new HashMap<>();
+	static HashMap<String, String> tablaPR = new HashMap<>();
 
 	public static void main(String[] args) throws IOException {
 
 		rellenarMatriz();
+		rellenarPR();
 
 		// Vamos leyendo el archivo
-
+		TablaSimbolos TS = new TablaSimbolos();
 		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta files
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);
@@ -53,11 +56,11 @@ public class ALex {
 						car = br.read();
 						break;
 					case "C":
-						valor = Character.getNumericValue((char)car);
+						valor = Character.getNumericValue((char) car);
 						car = br.read();
 						break;
 					case "D":
-						valor = valor * 10 + Character.getNumericValue((char)car);
+						valor = valor * 10 + Character.getNumericValue((char) car);
 						car = br.read();
 						break;
 					case "E":
@@ -80,17 +83,20 @@ public class ALex {
 						car = br.read();
 						break;
 					case "H":
-						lexema += (char)car;
-						/*
-						 * if ( tablaPR(lexema) =! null ) tokenId = new
-						 * Pair<String,Integer>(lexema,"-");
-						 */
-						// else {
-						int p = posTS(lexema);
-						// if ( p != null)
-						token = new Pair<String, String>("id", p + "");
-						// else
-						// p = insertarPS(new Entrada(lexema,null,));
+						lexema += (char) car;
+
+						if (buscarPR(lexema)) {
+							if (lexema == "true" || lexema == "false")
+								token = new Pair<String, String>("logico", lexema);
+							else
+								token = new Pair<String, String>(lexema, "-");
+						} else {
+							int p = TS.buscarTS(lexema);
+							if (p == -1)
+								p = TS.insertarTS(new Entrada(lexema));
+							
+							token = new Pair<String, String>("id", p + "");
+						}
 						car = br.read();
 						estado = 0;
 						System.out.println(token);
@@ -247,8 +253,23 @@ public class ALex {
 
 	}
 
-	private static int posTS(String lexema) {
-		return 0;
+	private static void rellenarPR() {
+		tablaPR.put("if", "");
+		tablaPR.put("while", "");
+		tablaPR.put("alert", "");
+		tablaPR.put("input", "");
+		tablaPR.put("let", "");
+		tablaPR.put("number", "");
+		tablaPR.put("boolean", "");
+		tablaPR.put("string", "");
+		tablaPR.put("true", "");
+		tablaPR.put("false", "");
+		tablaPR.put("function", "");
+		tablaPR.put("return", "");
+	}
+
+	private static boolean buscarPR(String lexema) {
+		return tablaPR.get(lexema) != null;
 	}
 
 	/**
