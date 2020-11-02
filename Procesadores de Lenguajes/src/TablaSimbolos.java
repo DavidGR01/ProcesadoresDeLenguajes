@@ -24,8 +24,8 @@ public class TablaSimbolos {
 	}
 
 	/**
-	 * Inserta en ambas estructuras de datos y devuelve la nueva posicion. 
-	 * -1 Si falla algo aunque no debería
+	 * Inserta en ambas estructuras de datos y devuelve la nueva posicion. -1 Si
+	 * falla algo aunque no debería
 	 * 
 	 * @param ent
 	 * @return
@@ -48,7 +48,8 @@ public class TablaSimbolos {
 	static void toFile() throws IOException {
 		// Sobreescribe cualquier archivo anterior con el mismo nombre
 		FileWriter myWriter = new FileWriter("TS.txt");
-		myWriter.write("hola");
+		myWriter.write("TABLA PRINCIPAL #1:");
+
 		myWriter.close();
 	}
 
