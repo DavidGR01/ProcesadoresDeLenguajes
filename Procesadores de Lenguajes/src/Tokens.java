@@ -7,7 +7,7 @@ public class Tokens {
 
 	private static List<Pair<String, String>> tokens = new ArrayList<>();
 
-	static void guardarToken(Pair<String, String> token) {
+	static void generarToken(Pair<String, String> token) {
 		tokens.add(token);
 	}
 

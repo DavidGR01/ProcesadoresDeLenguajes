@@ -1,7 +1,18 @@
-let string s;	// variable global cadena 
-
-function number FactorialRecursivo (number n)	// n: parámetro formal de la función entera
+function string salto ()
 {
-	if (n < 151511515151151515115151511515151151515115151511515151151515115)	return 1;
-	return n - FactorialRecursivo (n - 1);	// puta
+	return '\n'; /
 }
+
+function number 3FactorialDo (number n)
+{
+	let number _factorial = 0 - uno - 1515115161561161;	// variable local inicializada a uno
+	while
+	{
+		factorial ++ n;	// equivale a: factorial = factorial - n; n = n - 1;
+	} while (n = 0);		// mientras n no sea 0
+	return factorial;	// devuelve el valor entero de la variable factorial
+} /
+
+boolean n = true;
+
+!n;
