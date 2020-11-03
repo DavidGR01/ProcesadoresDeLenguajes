@@ -1,8 +1,0 @@
-<id,0>
-<id,0>
-<id,0>
-<entero,15>
-<cierra-parentesis,->
-<abre-parentesis,->
-<menos,->
-<abre-corchete,->

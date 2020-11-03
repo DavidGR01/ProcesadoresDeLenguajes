@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,6 +24,7 @@ public class ALex {
 
 		int estado = 0;
 		int car = br.read();
+		int col = 0;
 		String accion = null;
 
 		String lexema = null;
@@ -34,18 +34,22 @@ public class ALex {
 		// Pair<String, Integer> tokenEntero = null, tokenId = null;
 		Pair<String, String> token = null;
 
-		// Mientras no leamos EOF
+		// Variables para llevar la cuenta de la linea en la que estamos
+		int line = 1;
 
+		// Mientras no leamos EOF
 		while (car != -1) {
 
 			do {
-				accion = matriz[estado][columna(estado, (char) car)].getRight();
+				col = columna(estado, car);
+				accion = matriz[estado][col].getRight();
 				System.out.println(accion);
-				estado = matriz[estado][columna(estado, (char) car)].getLeft();
+				estado = matriz[estado][col].getLeft();
 
-				if (estado == -2)
-					System.out.println("Error!");
-				else {
+				if (estado == -2) {
+					System.out.println("Error en la linea " + line);
+					car = br.read();
+				} else {
 					switch (accion) {
 					case "A":
 						car = br.read();
@@ -83,8 +87,6 @@ public class ALex {
 						car = br.read();
 						break;
 					case "H":
-						lexema += (char) car;
-
 						if (buscarPR(lexema)) {
 							if (lexema == "true" || lexema == "false")
 								token = new Pair<String, String>("logico", lexema);
@@ -94,10 +96,10 @@ public class ALex {
 							int p = TS.buscarTS(lexema);
 							if (p == -1)
 								p = TS.insertarTS(new Entrada(lexema));
-							
+
 							token = new Pair<String, String>("id", p + "");
 						}
-						car = br.read();
+
 						estado = 0;
 						System.out.println(token);
 						Tokens.guardarToken(token);
@@ -183,15 +185,18 @@ public class ALex {
 						car = br.read();
 						estado = 0;
 						break;
-					case "S":
+					case "S": // Estado para salir de los comentarios??
+						// estado = 0;
+						// car = br.read();
 						break;
 					}
 				}
 
-			} while (estado < 7 && estado >= 0);
+			} while (estado < 7 && estado >= 0);// && car != -1
 		}
 		// TablaSimbolos.toFile();
 		Tokens.toFile();
+		TS.toFile();
 		br.close();
 	}
 
@@ -234,21 +239,17 @@ public class ALex {
 		matriz[2][6] = new Pair<Integer, String>(8, "E");
 
 		// Cuarta fila
-		matriz[3][18] = new Pair<Integer, String>(4, "A");
+		matriz[3][19] = new Pair<Integer, String>(4, "A");
 
 		// Quinta fila
 		matriz[4][3] = new Pair<Integer, String>(4, "G");
-		matriz[4][20] = new Pair<Integer, String>(0, "R");
+		matriz[4][21] = new Pair<Integer, String>(0, "S");
 
 		// Sexta fila
-		matriz[4][3] = new Pair<Integer, String>(4, "G");
-		matriz[4][20] = new Pair<Integer, String>(0, "S");
+		matriz[5][4] = new Pair<Integer, String>(5, "G");
+		matriz[5][20] = new Pair<Integer, String>(9, "I");
 
 		// Septima fila
-		matriz[5][4] = new Pair<Integer, String>(5, "G");
-		matriz[5][19] = new Pair<Integer, String>(9, "I");
-
-		// Octava fila
 		matriz[6][8] = new Pair<Integer, String>(10, "F");
 
 	}
@@ -273,27 +274,27 @@ public class ALex {
 	}
 
 	/**
-	 * Devuelve la columna apropiada a cada character
+	 * Devuelve la columna correspondiente a cada character
 	 * 
 	 * @param estado
 	 * @param c
 	 * @return
 	 */
-	private static int columna(int estado, char c) {
+	private static int columna(int estado, int c) {
 		// l:letras min y mayus
 		// d:digitos
 		// c:char - {<eol>}
 		// p:char-{'}
 		// r:o.c. - {d}
 		// q:o.c. - {l,_,d}
-		if (estado == 0 && (c == 9 || c == 32 || c == 10))
+		if (estado == 0 && (c == 9 || c == 32 || c == 10 || c == 13)) // del
 			return 0;
-		if ((estado == 0 || estado == 1) && (c >= 65 && c <= 90) || (c >= 97 && c <= 122))
+		if ((estado == 0 || estado == 1) && ((c >= 65 && c <= 90) || (c >= 97 && c <= 122)))
 			return 1;
-		if (-1 < estado && estado < 3 && c >= 48 && c <= 57)
+		if (0 <= estado && estado <= 2 && c >= 48 && c <= 57)
 			return 2;
 
-		if (estado == 4 && c != 10)
+		if (estado == 4 && c != 10 && c != -1) // Saltando caracteres de los comentarios
 			return 3;
 		if (estado == 5 && c != 39)
 			return 4;
@@ -330,11 +331,11 @@ public class ALex {
 				return 20;
 		}
 		if (estado == 3 && c == 47)
-			return 18;
-		if (estado == 5 && c == 39)
 			return 19;
-		if (estado == 4 && c == 10)
+		if (estado == 5 && c == 39)
 			return 20;
+		if (estado == 4 && c == 10)
+			return 21;
 		return 5;
 	}
 

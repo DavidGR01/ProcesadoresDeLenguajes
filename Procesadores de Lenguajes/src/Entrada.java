@@ -1,9 +1,29 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Entrada {
 
 	private String lexema, tipo, desplazamiento, numParam, tipoParam, tipoDev, etiq;
+	private List<String> nombres;
+	private List<String> atributos;
 
 	public Entrada(String lexema) {
 		this.lexema = lexema;
+		this.atributos = new ArrayList<>();
+		this.atributos.add(tipo);
+		this.atributos.add(desplazamiento);
+		this.atributos.add(numParam);
+		this.atributos.add(tipoParam);
+		this.atributos.add(tipoDev);
+		this.atributos.add(etiq);
+
+		this.nombres = new ArrayList<>();
+		this.nombres.add("tipo");
+		this.nombres.add("despl");
+		this.nombres.add("numParam");
+		this.nombres.add("TipoParamXX");
+		this.nombres.add("TipoRetorno");
+		this.nombres.add("EtiqFuncion");
 	}
 
 	public String getLexema() {
@@ -64,8 +84,10 @@ public class Entrada {
 
 	@Override
 	public String toString() {
-		return "Lexema: " + lexema + ", Tipo: " + tipo + ", Desplazamiento: " + desplazamiento + ", Número Parámetros: "
-				+ numParam + ", Tipo Parámetros: " + tipoParam + ", Tipo Devolución: " + tipoDev + ", Etiqueta: " + etiq
-				+ ".";
+		String res = "*'" + lexema + "'\n";
+		/*
+		 * for(String s:atributos) { res += }
+		 */
+		return res;
 	}
 }
