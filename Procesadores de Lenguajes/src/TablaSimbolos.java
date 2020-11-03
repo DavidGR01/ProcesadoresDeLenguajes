@@ -6,10 +6,12 @@ import java.util.List;
 
 public class TablaSimbolos {
 
-	static HashMap<String, Integer> map = new HashMap<>();
-	List<Entrada> TS = new ArrayList<>();
+	private HashMap<String, Integer> map;
+	private List<Entrada> TS;
 
 	public TablaSimbolos() {
+		this.map = new HashMap<>();
+		this.TS = new ArrayList<>();
 	}
 
 	/**
@@ -18,7 +20,7 @@ public class TablaSimbolos {
 	 * @param str
 	 * @return
 	 */
-	int buscarTS(String str) {
+	public int buscarTS(String str) {
 		Integer pos = map.get(str);
 		return pos == null ? -1 : pos;
 	}
@@ -30,9 +32,9 @@ public class TablaSimbolos {
 	 * @param ent
 	 * @return
 	 */
-	int insertarTS(Entrada ent) {
+	public int insertarTS(Entrada ent) {
 		// Ya deberia haberse comprobado esto pero bueno
-		if (buscarTS(ent.getLexema()) == -1)
+		if (buscarTS(ent.getLexema()) != -1)
 			return -1;
 		int pos = TS.size();
 		TS.add(ent);
@@ -45,12 +47,14 @@ public class TablaSimbolos {
 	 * 
 	 * @throws IOException
 	 */
-	static void toFile() throws IOException {
+	public void toFile() throws IOException {
 		// Sobreescribe cualquier archivo anterior con el mismo nombre
-		FileWriter myWriter = new FileWriter("TS.txt");
-		myWriter.write("TABLA PRINCIPAL #1:");
-
-		myWriter.close();
+		FileWriter writer = new FileWriter("TS.txt");
+		if (!TS.isEmpty())
+			writer.write("TABLA PRINCIPAL #1:\n");
+		for (Entrada e : TS)
+			writer.write(e.toString());
+		writer.close();
 	}
 
 }

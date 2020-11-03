@@ -18,7 +18,7 @@ public class Prueba {
 		 * Display the Character }
 		 */
 
-		// toFile();
+		toFile();
 		int f = 46;
 		char h = 'a';
 		String s ="Hola";
@@ -29,7 +29,9 @@ public class Prueba {
 
 	private static void toFile() throws IOException {
 		FileWriter myWriter = new FileWriter("filename.txt");
-		myWriter.write("Files in Java mig is fun enough!");
+		myWriter.write("Files in Java mig \n"
+				+ "is fun \n"
+				+ "enough!\n");
 		myWriter.close();
 	}
 
