@@ -3,27 +3,14 @@ import java.util.List;
 
 public class Entrada {
 
-	private String lexema, tipo, desplazamiento, numParam, tipoParam, tipoDev, etiq;
+	private String lexema, tipo, desplazamiento, numParam, tipoDev, etiq;
 	private List<String> nombres;
 	private List<String> atributos;
+	private List<String> tipoParam = new ArrayList<>();
+	private List<String> modoPaso = new ArrayList<>();
 
 	public Entrada(String lexema) {
 		this.lexema = lexema;
-		this.atributos = new ArrayList<>();
-		this.atributos.add(tipo);
-		this.atributos.add(desplazamiento);
-		this.atributos.add(numParam);
-		this.atributos.add(tipoParam);
-		this.atributos.add(tipoDev);
-		this.atributos.add(etiq);
-
-		this.nombres = new ArrayList<>();
-		this.nombres.add("tipo");
-		this.nombres.add("despl");
-		this.nombres.add("numParam");
-		this.nombres.add("TipoParamXX");
-		this.nombres.add("TipoRetorno");
-		this.nombres.add("EtiqFuncion");
 	}
 
 	public String getLexema() {
@@ -58,12 +45,12 @@ public class Entrada {
 		this.numParam = numParam;
 	}
 
-	public String getTipoParam() {
+	public List<String> getTipoParam() {
 		return tipoParam;
 	}
 
-	public void setTipoParam(String tipoParam) {
-		this.tipoParam = tipoParam;
+	public void addTipoParam(String tipoParam) {
+		this.tipoParam.add(tipoParam);
 	}
 
 	public String getTipoDev() {

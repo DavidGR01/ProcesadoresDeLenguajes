@@ -1,1 +1,7 @@
-//s
+let string s;	// variable global cadena 
+
+function number FactorialRecursivo (number n)	// n: parámetro formal de la función entera
+{
+	if (n < 151511515151151515115151511515151151515115151511515151151515115)	return 1;
+	return n - FactorialRecursivo (n - 1);	// puta
+}

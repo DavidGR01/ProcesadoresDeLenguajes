@@ -7,7 +7,7 @@ import java.util.HashMap;
 public class ALex {
 
 	@SuppressWarnings("unchecked")
-	static Pair<Integer, String>[][] matriz = new Pair[21][22];
+	static Pair<Integer, String>[][] matriz = new Pair[23][23];
 	static HashMap<String, Integer> columnas = new HashMap<>();
 	static HashMap<String, String> tablaPR = new HashMap<>();
 
@@ -72,7 +72,7 @@ public class ALex {
 						token = new Pair<String, String>("entero", valor + "");
 						System.out.println(token);
 						Tokens.guardarToken(token);
-						car = br.read();
+						//car = br.read();
 						estado = 0;
 						break;
 					case "F":
@@ -227,6 +227,7 @@ public class ALex {
 		matriz[0][18] = new Pair<Integer, String>(20, "R");
 		matriz[0][19] = new Pair<Integer, String>(3, "A");
 		matriz[0][20] = new Pair<Integer, String>(5, "B");
+		matriz[0][22] = new Pair<Integer, String>(21, "S");
 
 		// Segunda fila
 		matriz[1][1] = new Pair<Integer, String>(1, "G");
@@ -242,8 +243,9 @@ public class ALex {
 		matriz[3][19] = new Pair<Integer, String>(4, "A");
 
 		// Quinta fila
-		matriz[4][3] = new Pair<Integer, String>(4, "G");
+		matriz[4][3] = new Pair<Integer, String>(4, "A");
 		matriz[4][21] = new Pair<Integer, String>(0, "S");
+		matriz[4][22] = new Pair<Integer, String>(22, "S");
 
 		// Sexta fila
 		matriz[5][4] = new Pair<Integer, String>(5, "G");
@@ -289,6 +291,8 @@ public class ALex {
 		// q:o.c. - {l,_,d}
 		if (estado == 0 && (c == 9 || c == 32 || c == 10 || c == 13)) // del
 			return 0;
+		if (estado == 0 && c == -1) // S-> <eof>
+			return 22;
 		if ((estado == 0 || estado == 1) && ((c >= 65 && c <= 90) || (c >= 97 && c <= 122)))
 			return 1;
 		if (0 <= estado && estado <= 2 && c >= 48 && c <= 57)
@@ -296,7 +300,9 @@ public class ALex {
 
 		if (estado == 4 && c != 10 && c != -1) // Saltando caracteres de los comentarios
 			return 3;
-		if (estado == 5 && c != 39)
+		if (estado == 4 && c == -1) // Encontramos eof leyendo comentarios
+			return 22;
+		if (estado == 5 && c != 39 && c != 10 && c != -1)
 			return 4;
 		if (estado == 2 && (c < 48 || c > 57))
 			return 6;
