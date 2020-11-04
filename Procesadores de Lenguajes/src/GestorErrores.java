@@ -9,9 +9,8 @@ public class GestorErrores {
 	private static HashMap<String, String> map = new HashMap<>();
 	private static List<String> errores = new ArrayList<>();
 
-	public static void addError(String cod, int linea, String tipoError, int car) {
-		String s = "Error " + tipoError + ": Código: " + cod + ": " + map.get(cod) + " en la línea " + linea
-				+ " y con el caracter: " + (char) car + "\n";
+	public static void addError(String cod, int linea, String tipoError) {
+		String s = "Error " + tipoError + ": Código: " + cod + ": " + map.get(cod) + " en la línea " + linea + "\n";
 		errores.add(s);
 		System.out.println(s);
 	}

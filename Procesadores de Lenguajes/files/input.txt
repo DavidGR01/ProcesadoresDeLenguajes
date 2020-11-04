@@ -1,18 +1,27 @@
-function string salto ()
+number a, b5; 	//Globales
+function proc1 (number x)
 {
-	return '\n'; /
+	number b_1;
+	b = 3;
+	x = b - 2 - a;
 }
-
-function number 3FactorialDo (number n)
+boolean fun (number x)
 {
-	let number _factorial = 0 - uno - 1515115161561161;	// variable local inicializada a uno
-	while
-	{
-		factorial ++ n;	// equivale a: factorial = factorial - n; n = n - 1;
-	} while (n = 0);		// mientras n no sea 0
-	return factorial;	// devuelve el valor entero de la variable factorial
-} /
-
-boolean n = true;
-
-!n;
+	number a;
+	a = hoa_sh__;
+	return (u - a) < b;
+}
+function proc2 (number d)
+{
+	number u;
+	boolean v;
+	u = a - d;
+	v = fun (u);
+}
+function main ()
+{
+	a = 1;
+	proc1 (a);
+	proc2 (a);
+	fun (b);
+}

@@ -1,5 +1,0 @@
-Error Léxico: Código: 52: Despues de / debe haber otra / en la línea 3 y con el caracter: 
-Error Léxico: Código: 57: Identificador no puede empezar con número en la línea 6 y con el caracter: F
-Error Léxico: Código: 51: No puede empezar identificador con _ en la línea 8 y con el caracter: _
-Error Léxico: Código: 56: Max entero 32767 en la línea 8 y con el caracter: ;
-Error Léxico: Código: 52: Despues de / debe haber otra / en la línea 14 y con el caracter: 
