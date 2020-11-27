@@ -1,27 +1,30 @@
-number a, b5; 	//Globales
-function proc1 (number x)
+let string _s;	// variable global cadena
+
+function number 56FactorialRecursivo (number n)	// n: parámetro formal de la función entera
 {
-	number b_1;
-	b = 3;
-	x = b - 2 - a;
+	if (n < 0)	return 1;
+	return n - FactorialRecursivo (n - 1);	// llamada recursiva 
 }
-boolean fun (number x)
+
+let number uno = 1;	// la inicialización es de implementación opcional
+let number _UNO = uno;
+
+function string salto ()
 {
-	number a;
-	a = hoa_sh__;
-	return (u - a) < b;
+	return '\n';
+	string a = 'Nacido y criado en un barrio del distrito neoyorquino de Queens llamado Jamaica';
 }
-function proc2 (number d)
+
+function number FactorialDo (number n)
 {
-	number u;
-	boolean v;
-	u = a - d;
-	v = fun (u);
+	let number 5factorial = 0 > uno - 1;	// variable local inicializada a uno
+	while
+	{
+		factorial ++n;	// equivale a: factorial = factorial - n; n = n - 1;
+	} while (n | 0);		// mientras n no sea 0
+	return 9factorial;	// devuelve el valor entero de la variable factorial
 }
-function main ()
-{
-	a = 1;
-	proc1 (a);
-	proc2 (a);
-	fun (b);
-}
+
+boolean n = true;
+
+!n;

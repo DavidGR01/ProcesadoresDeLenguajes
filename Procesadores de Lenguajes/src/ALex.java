@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,204 +11,173 @@ public class ALex {
 	static Pair<Integer, String>[][] matriz = new Pair[23][23];
 	static HashMap<String, Integer> columnas = new HashMap<>(); // sobra?
 	static HashMap<String, String> tablaPR = new HashMap<>();
+	private static FileReader fr;
+	private static BufferedReader br;
+	static int car;
+	static TablaSimbolos TS;
+	public static int line = 1; // Variables para llevar la cuenta de la linea en la que estamos
 
-	public static void main(String[] args) throws IOException {
-
+	public ALex() throws IOException {
 		rellenarMatriz();
 		rellenarPR();
 
 		// Vamos leyendo el archivo
-		TablaSimbolos TS = new TablaSimbolos();
+		TS = new TablaSimbolos();
 		GestorErrores.rellenarMap();
 		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta files
 												// Cambiar a leer por argimentos
-		FileReader fr = new FileReader(f);
-		BufferedReader br = new BufferedReader(fr);
+		fr = new FileReader(f);
+		br = new BufferedReader(fr);
+		car = br.read();
+	}
+
+	public static Pair<String, String> execALex() throws IOException {
 
 		int estado = 0;
-		int car = br.read();
 		int col = 0;
 		String accion = null;
 
 		String lexema = null;
 		int valor = 0;
-		// Pair<String, String> tokenSimbolo = null, tokenIncrementador = null,
-		// tokenCadena = null;
-		// Pair<String, Integer> tokenEntero = null, tokenId = null;
 		Pair<String, String> token = null;
 
-		// Variables para llevar la cuenta de la linea en la que estamos
-		int line = 1;
-
-		// Mientras no leamos EOF
-		while (car != -1) {
+		do {
+			// EOF
+			if (car == -1)
+				return new Pair<String, String>("$", "");
 			
-			do {
-				if (car == 10)
-					line++;
-				col = columna(estado, car);
-				accion = matriz[estado][col].getRight();
-				System.out.println(accion);
-				estado = matriz[estado][col].getLeft();
+			if (car == 10)
+				line++;
+			col = columna(estado, car);
+			accion = matriz[estado][col].getRight();
+			estado = matriz[estado][col].getLeft();
 
-				if (estado == -2) {
-					GestorErrores.addError(accion, line, "Léxico");
-					// Seguimos leyendo el fichero desde el siguiente caracter al erroneo
+			if (estado == -2) {
+				GestorErrores.addError(accion, line, "Léxico");
+				// Seguimos leyendo el fichero desde el siguiente caracter al erroneo
+				car = br.read();
+				estado = 0;
+			} else {
+				switch (accion) {
+				case "A":
 					car = br.read();
-					estado = 0;
-				} else {
-					switch (accion) {
-					case "A":
-						car = br.read();
-						break;
-					case "B":
-						lexema = "";
+					break;
+				case "B":
+					lexema = "";
+					if(car!=39)
 						lexema += (char) car;
-						car = br.read();
-						break;
-					case "C":
-						valor = Character.getNumericValue((char) car);
-						car = br.read();
-						break;
-					case "D":
-						valor = valor * 10 + Character.getNumericValue((char) car);
-						car = br.read();
-						break;
-					case "E":
-						// Revisar rango
-						if (valor > 32767)
-							GestorErrores.addError("56", line, "Léxico");
-						else {
-							token = new Pair<String, String>("number", valor + "");
-							System.out.println(token.getLeft());
-							Tokens.generarToken(token);
-						}
+					car = br.read();
+					break;
+				case "C":
+					valor = Character.getNumericValue((char) car);
+					car = br.read();
+					break;
+				case "D":
+					valor = valor * 10 + Character.getNumericValue((char) car);
+					car = br.read();
+					break;
+				case "E":
+					// Revisar rango
+					if (valor > 32767) {
+						GestorErrores.addError("56", line, "Léxico");
 						estado = 0;
-						break;
-					case "F":
-						token = new Pair<String, String>("incrementador", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "G":
-						lexema += (char) car;
-						car = br.read();
-						break;
-					case "H":
-						if (buscarPR(lexema)) {
-							if (lexema == "true" || lexema == "false")
-								token = new Pair<String, String>("logico", lexema);
-							else
-								token = new Pair<String, String>(lexema, "");
-						} else {
-							int p = TS.buscarTS(lexema);
-							if (p == -1)
-								p = TS.insertarTS(new Entrada(lexema));
-
-							token = new Pair<String, String>("id", p + "");
-						}
-
-						estado = 0;
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						break;
-					case "I":
-						lexema += (char) car;
-
-						// Revisar Cadena
-						if (lexema.length() > 64)
-							GestorErrores.addError("55", line, "Léxico");
-						else {
-							token = new Pair<String, String>("cadena", lexema.replace('\'', '"'));
-							System.out.println(token.getLeft());
-							Tokens.generarToken(token);
-						}
-						car = br.read();
-						estado = 0;
-						break;
-					case "J":
-						token = new Pair<String, String>("abreParentesis", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "K":
-						token = new Pair<String, String>("cierraParentesis", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "L":
-						token = new Pair<String, String>("abreCorchete", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "M":
-						token = new Pair<String, String>("cierraCorchete", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "N":
-						token = new Pair<String, String>("menos", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "Ñ":
-						token = new Pair<String, String>("menorEstricto", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "O":
-						token = new Pair<String, String>("exclamacion", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "P":
-						token = new Pair<String, String>("puntoYcoma", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "Q":
-						token = new Pair<String, String>("igual", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "R":
-						token = new Pair<String, String>("coma", "");
-						System.out.println(token.getLeft());
-						Tokens.generarToken(token);
-						car = br.read();
-						estado = 0;
-						break;
-					case "S": // Estado para salir de los comentarios??
-						break;
+					} else {
+						token = new Pair<String, String>("number", valor + "");
+						return Tokens.toFile(token);
 					}
+					break;
+				case "F":
+					token = new Pair<String, String>("incrementador", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "G":
+					lexema += (char) car;
+					car = br.read();
+					break;
+				case "H":
+					if (buscarPR(lexema)) {
+						if (lexema == "true" || lexema == "false")
+							token = new Pair<String, String>("logico", lexema);
+						else
+							token = new Pair<String, String>(lexema, "");
+					} else {
+						int p = TS.buscarTS(lexema);
+						if (p == -1)
+							p = TS.insertarTS(new Entrada(lexema));
+						token = new Pair<String, String>("id", p + "");
+					}
+					return Tokens.toFile(token);
+				case "I":
+					// Revisar Cadena
+					if (lexema.length() > 64) {
+						GestorErrores.addError("55", line, "Léxico");
+						estado = 0;
+					} else {
+						token = new Pair<String, String>("cadena", lexema);
+						car=br.read();
+						return Tokens.toFile(token);
+					}
+					car = br.read();
+				case "J":
+					token = new Pair<String, String>("abreParentesis", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "K":
+					token = new Pair<String, String>("cierraParentesis", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "L":
+					token = new Pair<String, String>("abreCorchete", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "M":
+					token = new Pair<String, String>("cierraCorchete", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "N":
+					token = new Pair<String, String>("menos", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "Ñ":
+					token = new Pair<String, String>("menorEstricto", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "O":
+					token = new Pair<String, String>("exclamacion", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "P":
+					token = new Pair<String, String>("puntoYcoma", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "Q":
+					token = new Pair<String, String>("igual", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "R":
+					token = new Pair<String, String>("coma", "");
+					car = br.read();
+					return Tokens.toFile(token);
+				case "S":
+					break;
 				}
+			}
 
-			} while (estado < 7 && estado >= 0);
-		}
-		Tokens.toFile();
-		TS.toFile();
-		GestorErrores.toFile();
+		} while (estado < 7 && estado >= 0);
+		return null;
+	}
+
+	public static void closeFile() throws IOException {
 		br.close();
+		fr.close();
+	}
+
+	public static void toFileTS() throws IOException {
+		TS.toFile();
+	}
+
+	public static void toFileGE() throws IOException {
+		GestorErrores.toFile();
 	}
 
 	private static void rellenarMatriz() {

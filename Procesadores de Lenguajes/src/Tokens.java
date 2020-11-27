@@ -5,18 +5,16 @@ import java.util.List;
 
 public class Tokens {
 
-	private static List<Pair<String, String>> tokens = new ArrayList<>();
-
-	static void generarToken(Pair<String, String> token) {
-		tokens.add(token);
+	public static Pair<String, String> toFile(Pair<String, String> token) throws IOException {
+		FileWriter myWriter = new FileWriter("tokens.txt", true);
+		myWriter.write("<" + token.getLeft() + "," + token.getRight() + ">\n");
+		myWriter.close();
+		return token;
 	}
 
-	static void toFile() throws IOException {
-
+	public static void clearFile() throws IOException {
 		FileWriter myWriter = new FileWriter("tokens.txt");
-		for (Pair<String, String> token : tokens)
-			myWriter.write("<" + token.getLeft() + "," + token.getRight() + ">\n");
+		myWriter.write("");
 		myWriter.close();
 	}
-
 }
