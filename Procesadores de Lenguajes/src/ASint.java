@@ -91,7 +91,8 @@ public class ASint {
 	private static void rellenarGramatica() {
 		ArrayList<ArrayList<String>> producciones = new ArrayList<>();
 		ArrayList<String> prod = new ArrayList<>();
-
+		
+		//AXIOMA
 		// P->BP|FP|lambda
 		producciones.clear();
 		prod.clear();
@@ -106,11 +107,157 @@ public class ASint {
 		prod.add("lambda");
 		producciones.add(prod);
 		gram.put("P", producciones);
+		//FUNCIONES
+		//F-> function H id(A){C}
+		producciones.clear();
+		prod.clear();
+		prod.add("function");
+		prod.add("H");
+		prod.add("id");
+		prod.add("(");
+		prod.add("A");
+		prod.add(")");
+		prod.add("{");
+		prod.add("C");
+		prod.add("}");
+		producciones.add(prod);
+		gram.put("F",producciones);
+		//H->T|lambda
+		producciones.clear();
+		prod.clear();
+		prod.add("T");
+		producciones.add(prod);
+		prod.clear();
+		prod.add("lambda");
+		producciones.add(prod);
+		gram.put("H",producciones);
+		//A->TidK|lambda
+		producciones.clear();
+		prod.clear();
+		prod.add("T");
+		prod.add("id");
+		prod.add("K");
+		producciones.add(prod);
+		prod.clear();
+		prod.add("lambda");
+		producciones.add(prod);
+		gram.put("A",producciones);
+		//K->,TidK|lambda
+		producciones.clear();
+		prod.clear();
+		prod.add(",");
+		prod.add("T");
+		prod.add("id");
+		prod.add("K");
+		producciones.add(prod);
+		prod.clear();
+		prod.add("lambda");
+		producciones.add(prod);
+		gram.put("K",producciones);
+		//C->BC|lambda
+		producciones.clear();
+		prod.clear();
+		prod.add("B");
+		prod.add("C");
+		producciones.add(prod);
+		prod.clear();
+		prod.add("lambda");
+		producciones.add(prod);
+		gram.put("C",producciones);
+		//SENTENCIAS COMPUESTAS Y DECLARACIONES
+		producciones.clear();
+		prod.clear();
+		prod.add("if");
+		prod.add("(");
+		prod.add("E");
+		prod.add(")");
+		prod.add("S");
+		producciones.add(prod);
+		prod.clear();
+		prod.add("S");
+		//B->if(E)S|S|while(E){D}|letTid;
+		producciones.add(prod);
+		prod.clear();
+		prod.add("while");
+		prod.add("(");
+		prod.add("E");
+		prod.add(")");
+		prod.add("{");
+		prod.add("C"); //Cambio en la gramatica
+		prod.add("}");
+		producciones.add(prod);
+		prod.clear();
+		prod.add("let");
+		prod.add("T");
+		prod.add("id");
+		prod.add(";");
+		producciones.add(prod);
+		gram.put("B",producciones);
+		//T->number|boolean|string
+		producciones.clear();
+		prod.clear();
+		prod.add("number");
+		producciones.add(prod);
+		prod.clear();
+		prod.add("boolean");
+		producciones.add(prod);
+		prod.clear();
+		prod.add("string");
+		producciones.add(prod);
+		gram.put("T",producciones);
+		//SENTENCIAS SIMPLES
+		
+		
+		
+	
 	}
 
 	private static void rellenarTerminalesYNoTerminales() {
-		terminales.add("");
-		noTerminales.add("");
+		//Lambda es un no terminal?
+		//TERMINALES
+		terminales.add("<");
+		terminales.add("-");
+		terminales.add("!");
+		terminales.add("+");
+		terminales.add("id");
+		terminales.add("(");
+		terminales.add(")");
+		terminales.add("entero");
+		terminales.add("cadena");
+		terminales.add("=");
+		terminales.add(";");
+		terminales.add("alert");
+		terminales.add("input");
+		terminales.add("return");
+		terminales.add(",");
+		terminales.add("if");
+		terminales.add("while");
+		terminales.add("{");
+		terminales.add("}");
+		terminales.add("let");
+		terminales.add("number");
+		terminales.add("boolean");
+		terminales.add("string");
+		terminales.add("function");
+		
+		//NO TERMINALES
+		noTerminales.add("A");
+		noTerminales.add("B");
+		noTerminales.add("C");
+		noTerminales.add("D");
+		noTerminales.add("E");
+		noTerminales.add("F");
+		noTerminales.add("H");
+		noTerminales.add("K");
+		noTerminales.add("L");
+		noTerminales.add("P");
+		noTerminales.add("Q");
+		noTerminales.add("R");
+		noTerminales.add("S");
+		noTerminales.add("T");
+		noTerminales.add("U");
+		noTerminales.add("V");
+		noTerminales.add("X");
 	}
 
 	// Funcion para validar la gramatica
