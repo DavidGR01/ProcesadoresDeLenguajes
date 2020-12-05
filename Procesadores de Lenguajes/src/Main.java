@@ -6,21 +6,21 @@ public class Main {
 
 		ALex alex = new ALex();
 
-		Pair<String, String> token = new Pair<String, String>("","");
-
 		Tokens.clearFile();
-		
-		while (token.getLeft()!="$") {
-			token = ALex.execALex();
-			System.out.println(token.getLeft() + " " + token.getRight());
-		}
+
+		ASint.execASint();
 		
 		ALex.toFileGE();
 		ALex.toFileTS();
 
+		Parse.toFile();
+
 		ALex.closeFile();
-		
-		// ASint.execASint();
+
+//		for (String s : ASint.gram.keySet()) {
+//			System.out.println("First (" + s+") " + ASint.first(s));
+//			System.out.println("Follow (" + s+") " + ASint.follow(s));
+//		}
 
 	}
 

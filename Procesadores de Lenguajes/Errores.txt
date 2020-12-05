@@ -1,8 +1,2 @@
-Error Léxico: Código: 51: No puede empezar identificador con _ en la línea 1
-Error Léxico: Código: 57: Identificador no puede empezar con número en la línea 3
-Error Léxico: Código: 51: No puede empezar identificador con _ en la línea 10
-Error Léxico: Código: 55: Longitud maxima de string superada en la línea 15
-Error Léxico: Código: 57: Identificador no puede empezar con número en la línea 20
-Error Léxico: Código: 50: Carácter no valido en la línea 20
-Error Léxico: Código: 50: Carácter no valido en la línea 24
-Error Léxico: Código: 57: Identificador no puede empezar con número en la línea 25
+Error 8: Código: 555: null en la línea 1
+Error 1: Código: 555: null en la línea 1

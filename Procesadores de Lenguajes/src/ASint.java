@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 public class ASint {
 
 	// Estructura para la gramatica
-	private static HashMap<String, ArrayList<ArrayList<String>>> gram = new HashMap<>();
+	static HashMap<String, ArrayList<ArrayList<String>>> gram = new HashMap<>();
 
 	// Terminales y no terminales
 	private static ArrayList<String> terminales = new ArrayList<String>();
@@ -48,7 +49,7 @@ public class ASint {
 		rellenarGramatica("R", "!", "R", "|", "U");
 		rellenarGramatica("U", "++", "U", "|", "V");
 		// Factorizacion corregida
-		rellenarGramatica("V", "id", "Z", "|", "(", "E", ")", "|", "entero", "|", "cadena");
+		rellenarGramatica("V", "id", "Z", "|", "(", "E", ")", "|", "entero", "|", "cadena", "|", "logico");
 		rellenarGramatica("Z", "(", "L", ")", "|", "lambda");
 		rellenarTerminalesYNoTerminales();
 
@@ -72,7 +73,10 @@ public class ASint {
 		followH = follow("H");
 		followK = follow("K");
 
+		sigToken = ALex.execALex();
+
 		P();
+
 	}
 
 	public static ArrayList<String> first(String s) {
@@ -88,7 +92,6 @@ public class ASint {
 				ArrayList<String> resRec = new ArrayList<String>();
 				resRec = firstRec(gram.get(s).get(index - cont), resRec, 0);
 				for (String elem : resRec) {
-					System.out.println("Elemento  " + elem);
 					if (!res.contains(elem))
 						res.add(elem);
 				}
@@ -99,7 +102,6 @@ public class ASint {
 	}
 
 	public static ArrayList<String> firstRec(ArrayList<String> prod, ArrayList<String> res, int cont) {
-
 		if (cont == prod.size())
 			return res;
 		while (prod.size() > cont) {
@@ -112,17 +114,18 @@ public class ASint {
 
 					ArrayList<String> res1 = first(prod.get(cont));
 					for (String s : res1) {
-						if (s != "lambda")
+						if (cont == prod.size() - 1) {
 							res.add(s);
+						} else {
+							if (s != "lambda")
+								res.add(s);
+						}
+
 					}
-					cont += 1;
-					res1 = first(prod.get(cont));
-					for (String s : res1)
-						if (s != "lambda")
-							res.add(s);
-						else if (cont == prod.size() - 1 && s == "lambda")
-							res.add(s);
-					return res;
+					if (cont != prod.size() - 1)
+						return firstRec(prod, res, cont++);
+					else
+						return res;
 				} else
 					return first(prod.get(cont));
 
@@ -134,27 +137,74 @@ public class ASint {
 		return res;
 	}
 
+	public static ArrayList<String> firstFollow(ArrayList<String> prod) {
+		ArrayList<String> res = new ArrayList<>();
+		return firstRec(prod, res, 0);
+	}
+
 	// Follow
-	private static ArrayList<String> follow(String NOterminal) {
-		return null;
+	static ArrayList<String> follow(String nt) {
+		ArrayList<String> res = new ArrayList<>();
+		if (nt.equals("P"))
+			res.add("$");
+		for (Entry<String, ArrayList<ArrayList<String>>> regla : gram.entrySet()) {
+			for (ArrayList<String> prod : regla.getValue()) {
+				if (!regla.getKey().equals(prod.get(prod.size() - 1))) {
+					if (prod.contains(nt)) {
+						int indice = prod.indexOf(nt);
+						if (indice == prod.size() - 1)
+							res.addAll(follow(regla.getKey()));
+						else {
+							ArrayList<String> beta = beta(prod, nt);
+							ArrayList<String> first = firstFollow(beta);
+							if (first.remove("lambda")) {
+								if (!regla.getKey().equals(nt)) {
+									res.addAll(follow(regla.getKey()));
+								}
+							}
+							res.addAll(first);
+						}
+					}
+				}
+			}
+		}
+
+		return sinDuplicados(res);
+	}
+
+	private static ArrayList<String> sinDuplicados(ArrayList<String> arr) {
+		ArrayList<String> res = new ArrayList<>();
+		for (String s : arr) {
+			if (!res.contains(s))
+				res.add(s);
+		}
+		return res;
+	}
+
+	public static ArrayList<String> beta(ArrayList<String> prod, String nt) {
+		ArrayList<String> res = new ArrayList<>();
+		int indice = prod.indexOf(nt);
+		for (int i = indice + 1; i < prod.size(); i++)
+			res.add(prod.get(i));
+		return res;
 	}
 
 	// Producciones
 
 	private static void P() {
 
-		if (firstB.contains(sigToken.getLeft())) {
+		if (firstB.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("1");
 			B();
 			P();
-		} else if ((firstF.contains(sigToken.getLeft()))) {
+		} else if (firstF.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("2");
 			F();
 			P();
-		} else if (followP.contains(sigToken.getLeft())) {
+		} else if (followP.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("3");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "1"); // Falta código de error
 		}
 	}
 
@@ -164,14 +214,14 @@ public class ASint {
 			equipara("function");
 			H();
 			equipara("id");
-			equipara("(");
+			equipara("abreParentesis");
 			A();
-			equipara(")");
-			equipara("{");
+			equipara("cierraParentesis");
+			equipara("abreCorchete");
 			C();
-			equipara("}");
+			equipara("cierraCorchete");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "2"); // Falta código de error
 		}
 	}
 
@@ -186,61 +236,61 @@ public class ASint {
 			Parse.add("7");
 			equipara("string");
 		} else
-			GestorErrores.addError("555", ALex.line, "Lexico");
+			GestorErrores.addError("555", ALex.line, "3");
 
 	}
 
 	private static void H() {
 
-		if (firstT.contains(sigToken.getLeft())) {
+		if (firstT.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("8");
 			T();
-
-		} else if (followH.contains(sigToken.getLeft()))
+		} else if (followH.contains(traducir(sigToken.getLeft())))
 			Parse.add("9");
 		else
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "4"); // Falta código de error
 	}
 
 	private static void A() {
 
-		if (firstT.contains(sigToken.getLeft())) {
+		if (firstT.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("10");
 			T();
 			equipara("id");
 			K();
-		} else if (followA.contains(sigToken.getLeft()))
+		} else if (followA.contains(traducir(sigToken.getLeft())))
 			Parse.add("11");
 		else
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "5"); // Falta código de error
 	}
 
 	private static void K() {
-		if (sigToken.getLeft().equals(",")) {
+		if (sigToken.getLeft().equals("coma")) {
 			Parse.add("12");
+			equipara("coma");
 			T();
 			equipara("id");
 			K();
-		} else if (followK.contains(sigToken.getLeft()))
+		} else if (followK.contains(traducir(sigToken.getLeft())))
 			Parse.add("13");
 		else
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "6"); // Falta código de error
 	}
 
 	private static void C() {
 
-		if (firstB.contains(sigToken.getLeft())) {
+		if (firstB.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("14");
 			B();
 			C();
-		} else if (firstF.contains(sigToken.getLeft())) {
+		} else if (firstF.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("15");
 			F();
 			C();
-		} else if (followC.contains(sigToken.getLeft()))
+		} else if (followC.contains(traducir(sigToken.getLeft())))
 			Parse.add("16");
 		else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "7"); // Falta código de error
 		}
 	}
 
@@ -248,33 +298,33 @@ public class ASint {
 		if (sigToken.getLeft().equals("if")) {
 			Parse.add("17");
 			equipara("if");
-			equipara("(");
+			equipara("abreParentesis");
 			E();
-			equipara(")");
+			equipara("cierraParentesis");
 			S();
-		} else if (firstS.contains(sigToken.getLeft())) {
+		} else if (firstS.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("18");
 			S();
 		} else if (sigToken.getLeft().equals("while")) {
 			Parse.add("19");
 			equipara("while");
-			equipara("(");
+			equipara("abreParentesis");
 			E();
-			equipara(")");
-			equipara("{");
+			equipara("cierraParentesis");
+			equipara("abreCorchete");
 			C();
-			equipara("}");
+			equipara("cierraCorchete");
 		} else if (sigToken.getLeft().equals("let")) {
 			Parse.add("20");
 			equipara("let");
 			T();
 			equipara("id");
-			equipara(";");
+			equipara("puntoYcoma");
 		} else if (sigToken.getLeft().equals("return")) {
 			Parse.add("24");
 			equipara("return");
 			X();
-			equipara(";");
+			equipara("puntoYcoma");
 		}
 	}
 
@@ -286,130 +336,130 @@ public class ASint {
 		} else if (sigToken.getLeft().equals("alert")) {
 			Parse.add("22");
 			equipara("alert");
-			equipara("(");
+			equipara("abreParentesis");
 			E();
-			equipara(")");
-			equipara(";");
+			equipara("cierraParentesis");
+			equipara("puntoYcoma");
 		} else if (sigToken.getLeft().equals("input")) {
 			Parse.add("23");
 			equipara("input");
-			equipara("(");
+			equipara("abreParentesis");
 			equipara("id");
-			equipara(")");
-			equipara(";");
+			equipara("cierraParentesis");
+			equipara("puntoYcoma");
 		} else if (sigToken.getLeft().equals("return")) {
 			Parse.add("24");
 			equipara("return");
 			X();
-			equipara(";");
+			equipara("puntoYcoma");
 		}
 	}
 
 	private static void W() {
-		if (sigToken.getLeft().equals("=")) {
+		if (sigToken.getLeft().equals("igual")) {
 			Parse.add("25");
-			equipara("=");
+			equipara("igual");
 			E();
-			equipara(";");
-		} else if (sigToken.getLeft().equals("(")) {
+			equipara("puntoYcoma");
+		} else if (sigToken.getLeft().equals("abreParentesis")) {
 			Parse.add("26");
-			equipara("(");
+			equipara("abreParentesis");
 			L();
-			equipara(")");
+			equipara("cierraParentesis");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "8"); // Falta código de error
 		}
 	}
 
 	private static void L() {
-		if (firstE.contains(sigToken.getLeft())) {
+		if (firstE.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("27");
 			E();
 			Q();
-		} else if (followL.contains(sigToken.getLeft())) {
+		} else if (followL.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("28");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "9"); // Falta código de error
 		}
 	}
 
 	private static void Q() {
-		if (sigToken.getLeft().equals(",")) {
+		if (sigToken.getLeft().equals("coma")) {
 			Parse.add("29");
-			equipara(",");
+			equipara("coma");
 			E();
 			Q();
-		} else if (followQ.contains(sigToken.getLeft())) {
+		} else if (followQ.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("30");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "10"); // Falta código de error
 		}
 	}
 
 	private static void X() {
-		if (firstE.contains(sigToken.getLeft())) {
+		if (firstE.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("31");
 			E();
-		} else if (followX.contains(sigToken.getLeft())) {
+		} else if (followX.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("32");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "11"); // Falta código de error
 		}
 	}
 
 	private static void E() {
-		if (firstR.contains(sigToken.getLeft())) {
+		if (firstR.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("33");
 			R();
 			Y();
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "12"); // Falta código de error
 		}
 	}
 
 	private static void Y() {
-		if (sigToken.getLeft().equals("<")) {
+		if (sigToken.getLeft().equals("menorEstricto")) {
 			Parse.add("34");
-			equipara("<");
+			equipara("menorEstricto");
 			R();
 			Y();
-		} else if (sigToken.getLeft().equals("-")) {
+		} else if (sigToken.getLeft().equals("menos")) {
 			Parse.add("35");
-			equipara("-");
+			equipara("menos");
 			R();
 			Y();
-		} else if (followY.contains(sigToken.getLeft())) {
+		} else if (followY.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("36");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "13"); // Falta código de error
 		}
 	}
 
 	private static void R() {
-		if (sigToken.getLeft().equals("!")) {
+		if (sigToken.getLeft().equals("exclamacion")) {
 			Parse.add("37");
-			equipara("!");
+			equipara("exclamacion");
 			R();
-		} else if (firstU.contains(sigToken.getLeft())) {
+		} else if (firstU.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("38");
 			U();
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "14"); // Falta código de error
 		}
 	}
 
 	private static void U() {
-		if (sigToken.getLeft().equals("++")) {
+		if (sigToken.getLeft().equals("incrementador")) {
 			Parse.add("39");
-			equipara("++");
+			equipara("incrementador");
 			U();
-		} else if (firstV.contains(sigToken.getLeft())) {
+		} else if (firstV.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("40");
 			V();
-		} else if (followY.contains(sigToken.getLeft())) {
+		} else if (followY.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("36");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "15"); // Falta código de error
 		}
 	}
 
@@ -418,32 +468,35 @@ public class ASint {
 			Parse.add("41");
 			equipara("id");
 			Z();
-		} else if (sigToken.getLeft().equals("(")) {
+		} else if (sigToken.getLeft().equals("abreParentesis")) {
 			Parse.add("42");
-			equipara("(");
+			equipara("abreParentesis");
 			E();
-			equipara(")");
+			equipara("cierraParentesis");
 		} else if (sigToken.getLeft().equals("entero")) {
 			Parse.add("43");
 			equipara("entero");
 		} else if (sigToken.getLeft().equals("cadena")) {
 			Parse.add("44");
 			equipara("cadena");
+		} else if (sigToken.getLeft().equals("logico")) {
+			Parse.add("45");
+			equipara("logico");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "16"); // Falta código de error
 		}
 	}
 
 	private static void Z() {
-		if (sigToken.getLeft().equals("(")) {
-			Parse.add("45");
-			equipara("(");
-			L();
-			equipara(")");
-		} else if (followZ.contains(sigToken.getLeft())) {
+		if (sigToken.getLeft().equals("abreParentesis")) {
 			Parse.add("46");
+			equipara("abreParentesis");
+			L();
+			equipara("cierraParentesis");
+		} else if (followZ.contains(traducir(sigToken.getLeft()))) {
+			Parse.add("47");
 		} else {
-			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+			GestorErrores.addError("555", ALex.line, "17"); // Falta código de error
 		}
 	}
 
@@ -485,9 +538,50 @@ public class ASint {
 
 	private static void rellenarTerminalesYNoTerminales() {
 		terminales.addAll(Arrays.asList("<", "-", "!", "++", "id", "(", ")", "entero", "cadena", "=", ";", "alert",
-				"input", "return", "if", "while", "let", "number", "boolean", "string", "function", ",", "{", "}"));
+				"input", "return", "if", "while", "let", "number", "boolean", "logico", "string", "function", ",", "{",
+				"}"));
 		noTerminales.addAll(Arrays.asList("E", "R", "U", "V", "S", "L", "Q", "X", "B", "T", "F", "H", "A", "K", "C",
 				"P", "W", "Y", "Z"));
+	}
+
+	private static String traducir(String s) {
+		String res = s;
+		switch (s) {
+		case "menorEstricto":
+			res = "<";
+			break;
+		case "menos":
+			res = "-";
+			break;
+		case "exclamacion":
+			res = "!";
+			break;
+		case "incrementador":
+			res = "++";
+			break;
+		case "abreParentesis":
+			res = "(";
+			break;
+		case "cierraParentesis":
+			res = ")";
+			break;
+		case "igual":
+			res = "=";
+			break;
+		case "puntoYcoma":
+			res = ";";
+			break;
+		case "coma":
+			res = ",";
+			break;
+		case "abreCorchete":
+			res = "{";
+			break;
+		case "cierraCorchete":
+			res = "}";
+			break;
+		}
+		return res;
 	}
 
 	// Funcion para validar la gramatica
