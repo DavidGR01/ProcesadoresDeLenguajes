@@ -17,12 +17,10 @@ public class ASint {
 	private static Pair<String, String> sigToken = null;
 
 	// First y follow
-	private static ArrayList<String> firstB;
-	private static ArrayList<String> firstF;
-	private static ArrayList<String> firstR, firstU, firstV, firstE, firstS,firstT;
+	private static ArrayList<String> firstR, firstU, firstV, firstE, firstS, firstT, firstF, firstB;
 
-	private static ArrayList<String> followP;
-	private static ArrayList<String> followC, followY, followZ, followX, followL, followQ,followA,followK,followH;
+	private static ArrayList<String> followP, followC, followY, followZ, followX, followL, followQ, followA, followK,
+			followH;
 
 	public static void execASint() throws IOException {
 
@@ -55,7 +53,6 @@ public class ASint {
 		rellenarTerminalesYNoTerminales();
 
 		// Axioma
-
 		firstB = first("B");
 		firstF = first("F");
 		firstR = first("R");
@@ -63,6 +60,7 @@ public class ASint {
 		firstV = first("V");
 		firstE = first("E");
 		firstS = first("S");
+		firstT = first("T");
 		followX = follow("X");
 		followP = follow("P");
 		followC = follow("C");
@@ -70,7 +68,6 @@ public class ASint {
 		followZ = follow("Z");
 		followL = follow("L");
 		followQ = follow("Q");
-		firstT = first("T");
 		followA = follow("A");
 		followH = follow("H");
 		followK = follow("K");
@@ -162,7 +159,7 @@ public class ASint {
 	}
 
 	private static void F() {
-		if (sigToken.getLeft() == "function") {
+		if (sigToken.getLeft().equals("function")) {
 			Parse.add("4");
 			equipara("function");
 			H();
@@ -179,13 +176,13 @@ public class ASint {
 	}
 
 	private static void T() {
-		if (sigToken.getLeft() == "number") {
+		if (sigToken.getLeft().equals("number")) {
 			Parse.add("5");
 			equipara("number");
-		} else if (sigToken.getLeft() == "boolean") {
+		} else if (sigToken.getLeft().equals("boolean")) {
 			Parse.add("6");
 			equipara("boolean");
-		} else if (sigToken.getLeft() == "string") {
+		} else if (sigToken.getLeft().equals("string")) {
 			Parse.add("7");
 			equipara("string");
 		} else
@@ -219,7 +216,7 @@ public class ASint {
 	}
 
 	private static void K() {
-		if (sigToken.getLeft() == ",") {
+		if (sigToken.getLeft().equals(",")) {
 			Parse.add("12");
 			T();
 			equipara("id");
@@ -246,7 +243,7 @@ public class ASint {
 			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
 		}
 	}
-  
+
 	private static void B() {
 		if (sigToken.getLeft().equals("if")) {
 			Parse.add("17");
@@ -452,7 +449,7 @@ public class ASint {
 
 	private static void equipara(String t) {
 
-		if (sigToken.getLeft() == t)
+		if (sigToken.getLeft().equals(t))
 			try {
 				sigToken = ALex.execALex();
 			} catch (IOException e) {
