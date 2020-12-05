@@ -1,4 +1,6 @@
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,48 +10,115 @@ public class ASint {
 	private static HashMap<String, ArrayList<ArrayList<String>>> gram = new HashMap<>();
 
 	// Terminales y no terminales
-	private static ArrayList<String> terminales;
-	private static ArrayList<String> noTerminales;
-
+	private static ArrayList<String> terminales = new ArrayList<String>();
+	private static ArrayList<String> noTerminales = new ArrayList<String>();
+	
 	private static int posToken = 0;
 	private static Pair<String, String> sigToken = null;
+	
+	//First y follow
+		private static ArrayList<String> firstB;
+		private static ArrayList<String> firstF;
+		
+		private static ArrayList<String> followP;
+		private static ArrayList<String> followC;
 
-	public static void execASint() {
+	public static void execASint() throws IOException {
 
-		// Rellenamos la gramatica
-		rellenarGramatica();
+
+		rellenarGramatica("P", "B", "P", "|", "F", "P", "|", "lambda");
+		rellenarGramatica("F", "function", "H", "id", "(", "A", ")", "{", "C", "}");
+		rellenarGramatica("T", "number", "|", "boolean", "|", "string");
+		rellenarGramatica("H", "T", "|", "lambda");
+		rellenarGramatica("A", "T", "id", "K", "|", "lambda");
+		rellenarGramatica("K", ",", "T", "id", "K", "|", "lambda");
+		rellenarGramatica("C", "B", "C", "|", "F", "C", "|", "lambda");
+		rellenarGramatica("B", "if", "(", "E", ")", "S", "|", "S", "|", "while", "(", "E", ")", "{", "C", "}", "|",
+				"let", "T", "id", ";");
+		// Factorizacion corregida
+		rellenarGramatica("S", "id", "W", "|", "alert", "(", "E", ")", ";", "|", "input", "(", "id", ")", ";", "|",
+				"return", "X", ";");
+		rellenarGramatica("W", "=", "E", ";", "|", "(", "L", ")");
+
+		rellenarGramatica("L", "E", "Q", "|", "lambda");
+		rellenarGramatica("Q", ",", "E", "Q", "|", "lambda");
+		rellenarGramatica("X", "E", "|", "lambda");
+		// Recursividad corregida
+		rellenarGramatica("E", "R", "Y");
+		rellenarGramatica("Y", "<", "R", "Y", "|", "-", "R", "Y", "|", "lambda");
+
+		rellenarGramatica("R", "!", "R", "|", "U");
+		rellenarGramatica("U", "++", "U", "|", "V");
+		// Factorizacion corregida
+		rellenarGramatica("V", "id", "Z", "|", "(", "E", ")", "|", "entero", "|", "cadena");
 		rellenarTerminalesYNoTerminales();
+		
 
 		// Axioma
+
+		firstB = first("B");
+		firstF = first("F");
+		followP = follow("P");
+		followC = follow("C");
 		P();
 	}
 
-	// First
-	private static ArrayList<String> first(String s) {
+	public static ArrayList<String> first(String s) {
 
-		ArrayList<String> res = new ArrayList<>();
+		ArrayList<String> res = new ArrayList<String>();
 
-		if (terminales.contains(s)) {
+		if (gram.get(s) == null) {
 			res.add(s);
-		} else if (noTerminales.contains(s)) {
-			ArrayList<ArrayList<String>> producciones = gram.get(s);
-			for (ArrayList<String> prod : producciones) {
-				if (prod.size() == 1 && prod.contains("lambda")) {
-					res.add("lambda");
-					producciones.remove(prod);
+		} else {
+			int cont = gram.get(s).size();
+			int index = cont;
+			while (cont > 0) {
+				ArrayList<String> resRec = new ArrayList<String>();
+				resRec = firstRec(gram.get(s).get(index - cont), resRec, 0);
+				for (String elem : resRec) {
+					System.out.println("Elemento  " + elem);
+					if (!res.contains(elem))
+						res.add(elem);
 				}
-				for (String elem : prod) {
-					ArrayList<String> fir = first(elem); // Aqui llamar a first_rec o algo asi para
-					// poder tener en cuenta que no se ha derivado lambda
-
-					boolean seguir = false;
-					seguir = fir.remove("lambda");
-					res.addAll(fir);
-					if (seguir)
-						return res;
-				}
+				cont--;
 			}
 		}
+		return res;
+	}
+
+	public static ArrayList<String> firstRec(ArrayList<String> prod, ArrayList<String> res, int cont) {
+
+		if (cont == prod.size())
+			return res;
+		while (prod.size() > cont) {
+			if (terminales.contains(prod.get(cont))) {
+				res.add(prod.get(cont));
+				return res;
+
+			} else if (noTerminales.contains(prod.get(cont))) {
+				if (first(prod.get(cont)).contains("lambda")) {
+
+					ArrayList<String> res1 = first(prod.get(cont));
+					for (String s : res1) {
+						if (s != "lambda")
+							res.add(s);
+					}
+					cont += 1;
+					res1 = first(prod.get(cont));
+					for (String s : res1)
+						if (s != "lambda")
+							res.add(s);
+						else if (cont == prod.size() - 1 && s == "lambda")
+							res.add(s);
+					return res;
+				} else
+					return first(prod.get(cont));
+
+			} else
+				res.add("lambda");
+			cont++;
+		}
+
 		return res;
 	}
 
@@ -60,11 +129,7 @@ public class ASint {
 
 	// Producciones
 
-	private static void P() {
-
-		ArrayList<String> firstB = first("B");
-		ArrayList<String> firstF = first("F");
-		ArrayList<String> followP = follow("P");
+	private static void P() throws IOException {
 
 		if (firstB.contains(sigToken.getLeft())) {
 			Parse.add("1");
@@ -81,184 +146,91 @@ public class ASint {
 		}
 	}
 
-	private static void F() {
+	private static void F() throws IOException {
+		
+			Parse.add("4");
+			equipara("function");
+			H();
+			equipara("id");
+			equipara("(");
+			A();
+			equipara(")");
+			equipara("{");
+			C();
+			equipara("}");
+		
+	}
+
+	private static void C() throws IOException {
+		
+		if(firstB.contains(sigToken.getLeft())) {
+			Parse.add("11");
+			B();
+			C();
+		}else if(firstF.contains(sigToken.getLeft())) {
+			Parse.add("12");
+			F();
+			C();
+		}else if(followC.contains(sigToken.getLeft())) 
+			Parse.add("13");
+		else {
+			
+		}
+		
+	}
+
+	private static void A() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void H() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void equipara(String t) throws IOException {
+		
+		if (sigToken.getLeft() == t)
+				sigToken = ALex.execALex();
+		else
+			GestorErrores.addError("555", ALex.line, "Sintactico");
+		
 	}
 
 	private static void B() {
 
 	}
 
-	private static void rellenarGramatica() {
+	private static void rellenarGramatica(String... strings) {
 		ArrayList<ArrayList<String>> producciones = new ArrayList<>();
-		ArrayList<String> prod = new ArrayList<>();
-		
-		//AXIOMA
-		// P->BP|FP|lambda
-		producciones.clear();
-		prod.clear();
-		prod.add("B");
-		prod.add("P");
+		ArrayList<String> prod = new ArrayList<String>();
+		String s = strings[1];
+		int i = 1;
+		while (i < strings.length - 1) {
+			if (s != "|") {
+				prod.add(s);
+				s = strings[++i];
+			} else {
+				producciones.add(prod);
+				prod = new ArrayList<String>();
+
+				s = strings[++i];
+			}
+		}
+		if (strings[i - 1] == "|")
+			prod = new ArrayList<String>();
+		prod.add(strings[i]);
 		producciones.add(prod);
-		prod.clear();
-		prod.add("F");
-		prod.add("P");
-		producciones.add(prod);
-		prod.clear();
-		prod.add("lambda");
-		producciones.add(prod);
-		gram.put("P", producciones);
-		//FUNCIONES
-		//F-> function H id(A){C}
-		producciones.clear();
-		prod.clear();
-		prod.add("function");
-		prod.add("H");
-		prod.add("id");
-		prod.add("(");
-		prod.add("A");
-		prod.add(")");
-		prod.add("{");
-		prod.add("C");
-		prod.add("}");
-		producciones.add(prod);
-		gram.put("F",producciones);
-		//H->T|lambda
-		producciones.clear();
-		prod.clear();
-		prod.add("T");
-		producciones.add(prod);
-		prod.clear();
-		prod.add("lambda");
-		producciones.add(prod);
-		gram.put("H",producciones);
-		//A->TidK|lambda
-		producciones.clear();
-		prod.clear();
-		prod.add("T");
-		prod.add("id");
-		prod.add("K");
-		producciones.add(prod);
-		prod.clear();
-		prod.add("lambda");
-		producciones.add(prod);
-		gram.put("A",producciones);
-		//K->,TidK|lambda
-		producciones.clear();
-		prod.clear();
-		prod.add(",");
-		prod.add("T");
-		prod.add("id");
-		prod.add("K");
-		producciones.add(prod);
-		prod.clear();
-		prod.add("lambda");
-		producciones.add(prod);
-		gram.put("K",producciones);
-		//C->BC|lambda
-		producciones.clear();
-		prod.clear();
-		prod.add("B");
-		prod.add("C");
-		producciones.add(prod);
-		prod.clear();
-		prod.add("lambda");
-		producciones.add(prod);
-		gram.put("C",producciones);
-		//SENTENCIAS COMPUESTAS Y DECLARACIONES
-		producciones.clear();
-		prod.clear();
-		prod.add("if");
-		prod.add("(");
-		prod.add("E");
-		prod.add(")");
-		prod.add("S");
-		producciones.add(prod);
-		prod.clear();
-		prod.add("S");
-		//B->if(E)S|S|while(E){D}|letTid;
-		producciones.add(prod);
-		prod.clear();
-		prod.add("while");
-		prod.add("(");
-		prod.add("E");
-		prod.add(")");
-		prod.add("{");
-		prod.add("C"); //Cambio en la gramatica
-		prod.add("}");
-		producciones.add(prod);
-		prod.clear();
-		prod.add("let");
-		prod.add("T");
-		prod.add("id");
-		prod.add(";");
-		producciones.add(prod);
-		gram.put("B",producciones);
-		//T->number|boolean|string
-		producciones.clear();
-		prod.clear();
-		prod.add("number");
-		producciones.add(prod);
-		prod.clear();
-		prod.add("boolean");
-		producciones.add(prod);
-		prod.clear();
-		prod.add("string");
-		producciones.add(prod);
-		gram.put("T",producciones);
-		//SENTENCIAS SIMPLES
-		
-		
-		
-	
+		gram.put(strings[0], producciones);
 	}
 
 	private static void rellenarTerminalesYNoTerminales() {
-		//Lambda es un no terminal?
-		//TERMINALES
-		terminales.add("<");
-		terminales.add("-");
-		terminales.add("!");
-		terminales.add("+");
-		terminales.add("id");
-		terminales.add("(");
-		terminales.add(")");
-		terminales.add("entero");
-		terminales.add("cadena");
-		terminales.add("=");
-		terminales.add(";");
-		terminales.add("alert");
-		terminales.add("input");
-		terminales.add("return");
-		terminales.add(",");
-		terminales.add("if");
-		terminales.add("while");
-		terminales.add("{");
-		terminales.add("}");
-		terminales.add("let");
-		terminales.add("number");
-		terminales.add("boolean");
-		terminales.add("string");
-		terminales.add("function");
-		
-		//NO TERMINALES
-		noTerminales.add("A");
-		noTerminales.add("B");
-		noTerminales.add("C");
-		noTerminales.add("D");
-		noTerminales.add("E");
-		noTerminales.add("F");
-		noTerminales.add("H");
-		noTerminales.add("K");
-		noTerminales.add("L");
-		noTerminales.add("P");
-		noTerminales.add("Q");
-		noTerminales.add("R");
-		noTerminales.add("S");
-		noTerminales.add("T");
-		noTerminales.add("U");
-		noTerminales.add("V");
-		noTerminales.add("X");
-	}
+		terminales.addAll(Arrays.asList("<", "-", "!", "++", "id", "(", ")", "entero", "cadena", "=", ";", "alert",
+		"input", "return", "if", "while", "let", "number", "boolean", "string", "function", ",", "{", "}"));
+		noTerminales.addAll(Arrays.asList("E", "R", "U", "V", "S", "L", "Q", "X", "B", "T", "F", "H", "A", "K", "C",
+		"P", "W", "Y", "Z"));
+		}
 
 	// Funcion para validar la gramatica
 
