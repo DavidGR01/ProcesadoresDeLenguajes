@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 
 public class ASint {
@@ -34,23 +33,19 @@ public class ASint {
 		rellenarGramatica("C", "B", "C", "|", "F", "C", "|", "lambda");
 		rellenarGramatica("B", "if", "(", "E", ")", "S", "|", "S", "|", "while", "(", "E", ")", "{", "C", "}", "|",
 				"let", "T", "id", ";");
-		// Factorizacion corregida
 		rellenarGramatica("S", "id", "W", "|", "alert", "(", "E", ")", ";", "|", "input", "(", "id", ")", ";", "|",
 				"return", "X", ";");
 		rellenarGramatica("W", "=", "E", ";", "|", "(", "L", ")");
-
 		rellenarGramatica("L", "E", "Q", "|", "lambda");
 		rellenarGramatica("Q", ",", "E", "Q", "|", "lambda");
 		rellenarGramatica("X", "E", "|", "lambda");
-		// Recursividad corregida
 		rellenarGramatica("E", "R", "Y");
 		rellenarGramatica("Y", "<", "R", "Y", "|", "-", "R", "Y", "|", "lambda");
-
 		rellenarGramatica("R", "!", "R", "|", "U");
 		rellenarGramatica("U", "++", "U", "|", "V");
-		// Factorizacion corregida
 		rellenarGramatica("V", "id", "Z", "|", "(", "E", ")", "|", "entero", "|", "cadena", "|", "logico");
 		rellenarGramatica("Z", "(", "L", ")", "|", "lambda");
+
 		rellenarTerminalesYNoTerminales();
 
 		// Axioma
@@ -83,9 +78,9 @@ public class ASint {
 
 		ArrayList<String> res = new ArrayList<String>();
 
-		if (gram.get(s) == null) {
+		if (gram.get(s) == null)
 			res.add(s);
-		} else {
+		else {
 			int cont = gram.get(s).size();
 			int index = cont;
 			while (cont > 0) {
@@ -108,19 +103,16 @@ public class ASint {
 			if (terminales.contains(prod.get(cont))) {
 				res.add(prod.get(cont));
 				return res;
-
 			} else if (noTerminales.contains(prod.get(cont))) {
 				if (first(prod.get(cont)).contains("lambda")) {
-
 					ArrayList<String> res1 = first(prod.get(cont));
 					for (String s : res1) {
-						if (cont == prod.size() - 1) {
+						if (cont == prod.size() - 1)
 							res.add(s);
-						} else {
+						else {
 							if (s != "lambda")
 								res.add(s);
 						}
-
 					}
 					if (cont != prod.size() - 1)
 						return firstRec(prod, res, cont++);
@@ -128,18 +120,15 @@ public class ASint {
 						return res;
 				} else
 					return first(prod.get(cont));
-
 			} else
 				res.add("lambda");
 			cont++;
 		}
-
 		return res;
 	}
 
 	public static ArrayList<String> firstFollow(ArrayList<String> prod) {
-		ArrayList<String> res = new ArrayList<>();
-		return firstRec(prod, res, 0);
+		return firstRec(prod, new ArrayList<>(), 0);
 	}
 
 	// Follow
@@ -168,7 +157,6 @@ public class ASint {
 				}
 			}
 		}
-
 		return sinDuplicados(res);
 	}
 
@@ -190,9 +178,7 @@ public class ASint {
 	}
 
 	// Producciones
-
 	private static void P() {
-
 		if (firstB.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("1");
 			B();
@@ -201,11 +187,11 @@ public class ASint {
 			Parse.add("2");
 			F();
 			P();
-		} else if (followP.contains(traducir(sigToken.getLeft()))) {
+		} else if (followP.contains(traducir(sigToken.getLeft())))
 			Parse.add("3");
-		} else {
+		else
 			GestorErrores.addError("555", ALex.line, "1"); // Falta código de error
-		}
+
 	}
 
 	private static void F() {
@@ -220,9 +206,9 @@ public class ASint {
 			equipara("abreCorchete");
 			C();
 			equipara("cierraCorchete");
-		} else {
+		} else
 			GestorErrores.addError("555", ALex.line, "2"); // Falta código de error
-		}
+
 	}
 
 	private static void T() {
@@ -241,7 +227,6 @@ public class ASint {
 	}
 
 	private static void H() {
-
 		if (firstT.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("8");
 			T();
@@ -252,7 +237,6 @@ public class ASint {
 	}
 
 	private static void A() {
-
 		if (firstT.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("10");
 			T();
@@ -278,7 +262,6 @@ public class ASint {
 	}
 
 	private static void C() {
-
 		if (firstB.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("14");
 			B();
@@ -289,9 +272,8 @@ public class ASint {
 			C();
 		} else if (followC.contains(traducir(sigToken.getLeft())))
 			Parse.add("16");
-		else {
+		else
 			GestorErrores.addError("555", ALex.line, "7"); // Falta código de error
-		}
 	}
 
 	private static void B() {
@@ -325,7 +307,8 @@ public class ASint {
 			equipara("return");
 			X();
 			equipara("puntoYcoma");
-		}
+		} else
+			GestorErrores.addError("555", ALex.line, "7"); // Falta código de error
 	}
 
 	private static void S() {
@@ -352,7 +335,8 @@ public class ASint {
 			equipara("return");
 			X();
 			equipara("puntoYcoma");
-		}
+		} else
+			GestorErrores.addError("555", ALex.line, "7"); // Falta código de error
 	}
 
 	private static void W() {
@@ -366,9 +350,8 @@ public class ASint {
 			equipara("abreParentesis");
 			L();
 			equipara("cierraParentesis");
-		} else {
+		} else
 			GestorErrores.addError("555", ALex.line, "8"); // Falta código de error
-		}
 	}
 
 	private static void L() {
@@ -376,11 +359,10 @@ public class ASint {
 			Parse.add("27");
 			E();
 			Q();
-		} else if (followL.contains(traducir(sigToken.getLeft()))) {
+		} else if (followL.contains(traducir(sigToken.getLeft())))
 			Parse.add("28");
-		} else {
+		else
 			GestorErrores.addError("555", ALex.line, "9"); // Falta código de error
-		}
 	}
 
 	private static void Q() {
@@ -389,22 +371,20 @@ public class ASint {
 			equipara("coma");
 			E();
 			Q();
-		} else if (followQ.contains(traducir(sigToken.getLeft()))) {
+		} else if (followQ.contains(traducir(sigToken.getLeft())))
 			Parse.add("30");
-		} else {
+		else
 			GestorErrores.addError("555", ALex.line, "10"); // Falta código de error
-		}
 	}
 
 	private static void X() {
 		if (firstE.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("31");
 			E();
-		} else if (followX.contains(traducir(sigToken.getLeft()))) {
+		} else if (followX.contains(traducir(sigToken.getLeft())))
 			Parse.add("32");
-		} else {
+		else
 			GestorErrores.addError("555", ALex.line, "11"); // Falta código de error
-		}
 	}
 
 	private static void E() {
@@ -412,9 +392,8 @@ public class ASint {
 			Parse.add("33");
 			R();
 			Y();
-		} else {
+		} else
 			GestorErrores.addError("555", ALex.line, "12"); // Falta código de error
-		}
 	}
 
 	private static void Y() {
@@ -428,11 +407,10 @@ public class ASint {
 			equipara("menos");
 			R();
 			Y();
-		} else if (followY.contains(traducir(sigToken.getLeft()))) {
+		} else if (followY.contains(traducir(sigToken.getLeft())))
 			Parse.add("36");
-		} else {
+		else
 			GestorErrores.addError("555", ALex.line, "13"); // Falta código de error
-		}
 	}
 
 	private static void R() {
@@ -443,9 +421,8 @@ public class ASint {
 		} else if (firstU.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("38");
 			U();
-		} else {
+		} else
 			GestorErrores.addError("555", ALex.line, "14"); // Falta código de error
-		}
 	}
 
 	private static void U() {
@@ -456,11 +433,10 @@ public class ASint {
 		} else if (firstV.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("40");
 			V();
-		} else if (followY.contains(traducir(sigToken.getLeft()))) {
+		} else if (followY.contains(traducir(sigToken.getLeft())))
 			Parse.add("36");
-		} else {
+		else
 			GestorErrores.addError("555", ALex.line, "15"); // Falta código de error
-		}
 	}
 
 	private static void V() {
@@ -482,9 +458,8 @@ public class ASint {
 		} else if (sigToken.getLeft().equals("logico")) {
 			Parse.add("45");
 			equipara("logico");
-		} else {
+		} else
 			GestorErrores.addError("555", ALex.line, "16"); // Falta código de error
-		}
 	}
 
 	private static void Z() {
@@ -493,15 +468,13 @@ public class ASint {
 			equipara("abreParentesis");
 			L();
 			equipara("cierraParentesis");
-		} else if (followZ.contains(traducir(sigToken.getLeft()))) {
+		} else if (followZ.contains(traducir(sigToken.getLeft())))
 			Parse.add("47");
-		} else {
+		else
 			GestorErrores.addError("555", ALex.line, "17"); // Falta código de error
-		}
 	}
 
 	private static void equipara(String t) {
-
 		if (sigToken.getLeft().equals(t))
 			try {
 				sigToken = ALex.execALex();
@@ -510,7 +483,6 @@ public class ASint {
 			}
 		else
 			GestorErrores.addError("555", ALex.line, "Sintactico");
-
 	}
 
 	private static void rellenarGramatica(String... strings) {
@@ -525,7 +497,6 @@ public class ASint {
 			} else {
 				producciones.add(prod);
 				prod = new ArrayList<String>();
-
 				s = strings[++i];
 			}
 		}
