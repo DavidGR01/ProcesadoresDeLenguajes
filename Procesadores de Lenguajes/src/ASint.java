@@ -12,19 +12,22 @@ public class ASint {
 	// Terminales y no terminales
 	private static ArrayList<String> terminales = new ArrayList<String>();
 	private static ArrayList<String> noTerminales = new ArrayList<String>();
-	
+
 	private static int posToken = 0;
 	private static Pair<String, String> sigToken = null;
-	
-	//First y follow
-		private static ArrayList<String> firstB;
-		private static ArrayList<String> firstF;
-		
-		private static ArrayList<String> followP;
-		private static ArrayList<String> followC;
+
+	// First y follow
+	private static ArrayList<String> firstB;
+	private static ArrayList<String> firstF;
+	private static ArrayList<String> firstT;
+
+	private static ArrayList<String> followP;
+	private static ArrayList<String> followC;
+	private static ArrayList<String> followA;
+	private static ArrayList<String> followK;
+	private static ArrayList<String> followH;
 
 	public static void execASint() throws IOException {
-
 
 		rellenarGramatica("P", "B", "P", "|", "F", "P", "|", "lambda");
 		rellenarGramatica("F", "function", "H", "id", "(", "A", ")", "{", "C", "}");
@@ -51,8 +54,8 @@ public class ASint {
 		rellenarGramatica("U", "++", "U", "|", "V");
 		// Factorizacion corregida
 		rellenarGramatica("V", "id", "Z", "|", "(", "E", ")", "|", "entero", "|", "cadena");
+		rellenarGramatica("Z", "(", "L", ")", "|", "lambda");
 		rellenarTerminalesYNoTerminales();
-		
 
 		// Axioma
 
@@ -60,6 +63,10 @@ public class ASint {
 		firstF = first("F");
 		followP = follow("P");
 		followC = follow("C");
+		firstT = first("T");
+		followA = follow("A");
+		followH = follow("H");
+		followK = follow("K");
 		P();
 	}
 
@@ -129,7 +136,7 @@ public class ASint {
 
 	// Producciones
 
-	private static void P() throws IOException {
+	private static void P() {
 
 		if (firstB.contains(sigToken.getLeft())) {
 			Parse.add("1");
@@ -146,8 +153,9 @@ public class ASint {
 		}
 	}
 
-	private static void F() throws IOException {
-		
+	private static void F() {
+
+		if (sigToken.getLeft() == "function") {
 			Parse.add("4");
 			equipara("function");
 			H();
@@ -158,47 +166,98 @@ public class ASint {
 			equipara("{");
 			C();
 			equipara("}");
-		
-	}
-
-	private static void C() throws IOException {
-		
-		if(firstB.contains(sigToken.getLeft())) {
-			Parse.add("11");
-			B();
-			C();
-		}else if(firstF.contains(sigToken.getLeft())) {
-			Parse.add("12");
-			F();
-			C();
-		}else if(followC.contains(sigToken.getLeft())) 
-			Parse.add("13");
-		else {
-			
+		} else {
+			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
 		}
-		
+
 	}
 
-	private static void A() {
-		// TODO Auto-generated method stub
-		
+	private static void T() {
+		if (sigToken.getLeft() == "number") {
+			Parse.add("5");
+			equipara("number");
+		} else if (sigToken.getLeft() == "boolean") {
+			Parse.add("6");
+			equipara("boolean");
+		} else if (sigToken.getLeft() == "string") {
+			Parse.add("7");
+			equipara("string");
+		} else
+			GestorErrores.addError("555", ALex.line, "Lexico");
+
 	}
 
 	private static void H() {
+
+		if (firstT.contains(sigToken.getLeft())) {
+			Parse.add("8");
+			T();
+
+		} else if (followH.contains(sigToken.getLeft()))
+			Parse.add("9");
+		else
+			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+	}
+
+	private static void A() {
+
+		if (firstT.contains(sigToken.getLeft())) {
+			Parse.add("10");
+			T();
+			equipara("id");
+			K();
+		} else if (followA.contains(sigToken.getLeft()))
+			Parse.add("11");
+		else
+			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+	}
+
+	private static void K() {
+		if (sigToken.getLeft() == ",") {
+			Parse.add("12");
+			T();
+			equipara("id");
+			K();
+		} else if (followK.contains(sigToken.getLeft()))
+			Parse.add("13");
+		else
+			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+	}
+
+	private static void C() {
+
+		if (firstB.contains(sigToken.getLeft())) {
+			Parse.add("14");
+			B();
+			C();
+		} else if (firstF.contains(sigToken.getLeft())) {
+			Parse.add("15");
+			F();
+			C();
+		} else if (followC.contains(sigToken.getLeft()))
+			Parse.add("16");
+		else {
+			GestorErrores.addError("555", ALex.line, "Léxico"); // Falta código de error
+		}
+
+	}
+
+	private static void B() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	private static void equipara(String t) throws IOException {
-		
+	private static void equipara(String t) {
+
 		if (sigToken.getLeft() == t)
+			try {
 				sigToken = ALex.execALex();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		else
 			GestorErrores.addError("555", ALex.line, "Sintactico");
-		
-	}
-
-	private static void B() {
 
 	}
 
@@ -227,10 +286,10 @@ public class ASint {
 
 	private static void rellenarTerminalesYNoTerminales() {
 		terminales.addAll(Arrays.asList("<", "-", "!", "++", "id", "(", ")", "entero", "cadena", "=", ";", "alert",
-		"input", "return", "if", "while", "let", "number", "boolean", "string", "function", ",", "{", "}"));
+				"input", "return", "if", "while", "let", "number", "boolean", "string", "function", ",", "{", "}"));
 		noTerminales.addAll(Arrays.asList("E", "R", "U", "V", "S", "L", "Q", "X", "B", "T", "F", "H", "A", "K", "C",
-		"P", "W", "Y", "Z"));
-		}
+				"P", "W", "Y", "Z"));
+	}
 
 	// Funcion para validar la gramatica
 
