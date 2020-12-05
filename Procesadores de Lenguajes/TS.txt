@@ -1,12 +1,2 @@
 TABLA PRINCIPAL #1:
-*'s'
-*'actorialRecursivo'
-*'n'
-*'FactorialRecursivo'
-*'uno'
-*'UNO'
-*'salto'
-*'a'
-*'FactorialDo'
-*'actorial'
-*'factorial'
+*'aya'

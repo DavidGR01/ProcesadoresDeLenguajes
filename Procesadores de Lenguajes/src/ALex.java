@@ -82,7 +82,7 @@ public class ALex {
 						GestorErrores.addError("56", line, "Léxico");
 						estado = 0;
 					} else {
-						token = new Pair<String, String>("number", valor + "");
+						token = new Pair<String, String>("entero", valor + ""); /////////////////////////////////////////////////
 						return Tokens.toFile(token);
 					}
 					break;
