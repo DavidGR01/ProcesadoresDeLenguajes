@@ -24,15 +24,15 @@ public class ASint {
 
 	public static void execASint() throws IOException {
 
-		rellenarGramatica("P", "B", "P", "|", "F", "P", "|", "lambda");
+		rellenarGramatica("P", "B", "P", "|", "F", "P", "|", "lambda", "|", "S", "P");
 		rellenarGramatica("F", "function", "H", "id", "(", "A", ")", "{", "C", "}");
 		rellenarGramatica("T", "number", "|", "boolean", "|", "string");
 		rellenarGramatica("H", "T", "|", "lambda");
 		rellenarGramatica("A", "T", "id", "K", "|", "lambda");
 		rellenarGramatica("K", ",", "T", "id", "K", "|", "lambda");
 		rellenarGramatica("C", "B", "C", "|", "F", "C", "|", "lambda");
-		rellenarGramatica("B", "if", "(", "E", ")", "S", "|", "S", "|", "while", "(", "E", ")", "{", "C", "}", "|",
-				"let", "T", "id", ";");
+		rellenarGramatica("B", "if", "(", "E", ")", "S", "|", "while", "(", "E", ")", "{", "C", "}", "|", "let", "T",
+				"id", ";");
 		rellenarGramatica("S", "id", "W", "|", "alert", "(", "E", ")", ";", "|", "input", "(", "id", ")", ";", "|",
 				"return", "X", ";");
 		rellenarGramatica("W", "=", "E", ";", "|", "(", "L", ")");
@@ -47,30 +47,30 @@ public class ASint {
 		rellenarGramatica("Z", "(", "L", ")", "|", "lambda");
 
 		rellenarTerminalesYNoTerminales();
-//
-//		// Axioma
-//		firstB = first("B");
-//		firstF = first("F");
-//		firstR = first("R");
-//		firstU = first("U");
-//		firstV = first("V");
-//		firstE = first("E");
-//		firstS = first("S");
-//		firstT = first("T");
-//		followX = follow("X");
-//		followP = follow("P");
-//		followC = follow("C");
-//		followY = follow("Y");
-//		followZ = follow("Z");
-//		followL = follow("L");
-//		followQ = follow("Q");
-//		followA = follow("A");
-//		followH = follow("H");
-//		followK = follow("K");
-//
-//		sigToken = ALex.execALex();
-//
-//		P();
+
+		// Axioma
+		firstB = first("B");
+		firstF = first("F");
+		firstR = first("R");
+		firstU = first("U");
+		firstV = first("V");
+		firstE = first("E");
+		firstS = first("S");
+		firstT = first("T");
+		followX = follow("X");
+		followP = follow("P");
+		followC = follow("C");
+		followY = follow("Y");
+		followZ = follow("Z");
+		followL = follow("L");
+		followQ = follow("Q");
+		followA = follow("A");
+		followH = follow("H");
+		followK = follow("K");
+
+		sigToken = ALex.execALex();
+
+		P();
 
 	}
 
@@ -189,14 +189,18 @@ public class ASint {
 			P();
 		} else if (followP.contains(traducir(sigToken.getLeft())))
 			Parse.add("3");
-		else
+		else if (firstS.contains(traducir(sigToken.getLeft()))) {
+			Parse.add("4");
+			S();
+			P();
+		} else
 			GestorErrores.addError("555", ALex.line, "1"); // Falta código de error
 
 	}
 
 	private static void F() {
 		if (sigToken.getLeft().equals("function")) {
-			Parse.add("4");
+			Parse.add("5");
 			equipara("function");
 			H();
 			equipara("id");
@@ -213,13 +217,13 @@ public class ASint {
 
 	private static void T() {
 		if (sigToken.getLeft().equals("number")) {
-			Parse.add("5");
+			Parse.add("6");
 			equipara("number");
 		} else if (sigToken.getLeft().equals("boolean")) {
-			Parse.add("6");
+			Parse.add("7");
 			equipara("boolean");
 		} else if (sigToken.getLeft().equals("string")) {
-			Parse.add("7");
+			Parse.add("8");
 			equipara("string");
 		} else
 			GestorErrores.addError("555", ALex.line, "3");
@@ -228,64 +232,61 @@ public class ASint {
 
 	private static void H() {
 		if (firstT.contains(traducir(sigToken.getLeft()))) {
-			Parse.add("8");
+			Parse.add("9");
 			T();
 		} else if (followH.contains(traducir(sigToken.getLeft())))
-			Parse.add("9");
+			Parse.add("10");
 		else
 			GestorErrores.addError("555", ALex.line, "4"); // Falta código de error
 	}
 
 	private static void A() {
 		if (firstT.contains(traducir(sigToken.getLeft()))) {
-			Parse.add("10");
+			Parse.add("11");
 			T();
 			equipara("id");
 			K();
 		} else if (followA.contains(traducir(sigToken.getLeft())))
-			Parse.add("11");
+			Parse.add("12");
 		else
 			GestorErrores.addError("555", ALex.line, "5"); // Falta código de error
 	}
 
 	private static void K() {
 		if (sigToken.getLeft().equals("coma")) {
-			Parse.add("12");
+			Parse.add("13");
 			equipara("coma");
 			T();
 			equipara("id");
 			K();
 		} else if (followK.contains(traducir(sigToken.getLeft())))
-			Parse.add("13");
+			Parse.add("14");
 		else
 			GestorErrores.addError("555", ALex.line, "6"); // Falta código de error
 	}
 
 	private static void C() {
 		if (firstB.contains(traducir(sigToken.getLeft()))) {
-			Parse.add("14");
+			Parse.add("15");
 			B();
 			C();
 		} else if (firstF.contains(traducir(sigToken.getLeft()))) {
-			Parse.add("15");
+			Parse.add("16");
 			F();
 			C();
 		} else if (followC.contains(traducir(sigToken.getLeft())))
-			Parse.add("16");
+			Parse.add("17");
 		else
 			GestorErrores.addError("555", ALex.line, "7"); // Falta código de error
 	}
 
 	private static void B() {
 		if (sigToken.getLeft().equals("if")) {
-			Parse.add("17");
+			Parse.add("18");
 			equipara("if");
 			equipara("abreParentesis");
 			E();
 			equipara("cierraParentesis");
-			S();
-		} else if (firstS.contains(traducir(sigToken.getLeft()))) {
-			Parse.add("18");
 			S();
 		} else if (sigToken.getLeft().equals("while")) {
 			Parse.add("19");
@@ -301,11 +302,6 @@ public class ASint {
 			equipara("let");
 			T();
 			equipara("id");
-			equipara("puntoYcoma");
-		} else if (sigToken.getLeft().equals("return")) {
-			Parse.add("24");
-			equipara("return");
-			X();
 			equipara("puntoYcoma");
 		} else
 			GestorErrores.addError("555", ALex.line, "7"); // Falta código de error
@@ -433,9 +429,7 @@ public class ASint {
 		} else if (firstV.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("40");
 			V();
-		} else if (followY.contains(traducir(sigToken.getLeft())))
-			Parse.add("36");
-		else
+		} else
 			GestorErrores.addError("555", ALex.line, "15"); // Falta código de error
 	}
 
