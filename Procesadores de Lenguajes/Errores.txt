@@ -1,2 +1,0 @@
-Error 8: Código: 555: null en la línea 1
-Error 1: Código: 555: null en la línea 1
