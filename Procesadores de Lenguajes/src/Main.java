@@ -10,6 +10,8 @@ public class Main {
 
 		ASint.execASint();
 		
+		System.out.println(ASint.LL1());
+		
 		ALex.toFileGE();
 		ALex.toFileTS();
 

@@ -47,30 +47,30 @@ public class ASint {
 		rellenarGramatica("Z", "(", "L", ")", "|", "lambda");
 
 		rellenarTerminalesYNoTerminales();
-
-		// Axioma
-		firstB = first("B");
-		firstF = first("F");
-		firstR = first("R");
-		firstU = first("U");
-		firstV = first("V");
-		firstE = first("E");
-		firstS = first("S");
-		firstT = first("T");
-		followX = follow("X");
-		followP = follow("P");
-		followC = follow("C");
-		followY = follow("Y");
-		followZ = follow("Z");
-		followL = follow("L");
-		followQ = follow("Q");
-		followA = follow("A");
-		followH = follow("H");
-		followK = follow("K");
-
-		sigToken = ALex.execALex();
-
-		P();
+//
+//		// Axioma
+//		firstB = first("B");
+//		firstF = first("F");
+//		firstR = first("R");
+//		firstU = first("U");
+//		firstV = first("V");
+//		firstE = first("E");
+//		firstS = first("S");
+//		firstT = first("T");
+//		followX = follow("X");
+//		followP = follow("P");
+//		followC = follow("C");
+//		followY = follow("Y");
+//		followZ = follow("Z");
+//		followL = follow("L");
+//		followQ = follow("Q");
+//		followA = follow("A");
+//		followH = follow("H");
+//		followK = follow("K");
+//
+//		sigToken = ALex.execALex();
+//
+//		P();
 
 	}
 
@@ -555,6 +555,63 @@ public class ASint {
 		return res;
 	}
 
+	/**
+	 * BY DAVIDGR01 Devuelve todas las combinaciones de dos elementos de la
+	 * gramatica
+	 * 
+	 * @param nT Lista de no terminales que tienen mas de dos producciones
+	 * @return Lista de Pairs con left = alpha y right = beta
+	 */
+	private static ArrayList<Pair<String, Pair<ArrayList<String>, ArrayList<String>>>> getCombinaciones(
+			ArrayList<String> nT) {// (nT,(alpha,beta))
+		ArrayList<Pair<String, Pair<ArrayList<String>, ArrayList<String>>>> res = new ArrayList<>();
+		for (String s : nT) {
+			ArrayList<ArrayList<String>> prods = gram.get(s); // s --> a | b | c
+			for (int i = 0; i < prods.size() - 1; i++) {
+				for (int j = i + 1; j < prods.size(); j++) {
+					res.add(new Pair<String, Pair<ArrayList<String>, ArrayList<String>>>(s,
+							new Pair<ArrayList<String>, ArrayList<String>>(prods.get(i), prods.get(j))));
+					res.add(new Pair<String, Pair<ArrayList<String>, ArrayList<String>>>(s,
+							new Pair<ArrayList<String>, ArrayList<String>>(prods.get(j), prods.get(i))));
+				}
+			}
+		}
+		return res;
+	}
+
+	// BY DAVIDGR01
 	// Funcion para validar la gramatica
+	public static boolean LL1() {
+		boolean res = true;
+		ArrayList<String> masDeDosProds = new ArrayList<>();
+
+		// Sacamos las reglas con mas de dos producciones
+		for (Entry<String, ArrayList<ArrayList<String>>> regla : gram.entrySet()) {
+			if (regla.getValue().size() >= 2)
+				masDeDosProds.add(regla.getKey());
+		}
+		ArrayList<Pair<String, Pair<ArrayList<String>, ArrayList<String>>>> combinaciones = getCombinaciones(
+				masDeDosProds);
+
+		for (Pair<String, Pair<ArrayList<String>, ArrayList<String>>> par : combinaciones) {
+			ArrayList<String> firstLeft = firstFollow(par.getRight().getLeft()); // a,b, c
+			ArrayList<String> firstRight = firstFollow(par.getRight().getRight()); // g,
+			res = !firstLeft.removeAll(firstRight);
+			if (!res) {
+				System.out.println(par.getLeft());
+				break;
+			}
+			if (firstRight.contains("lambda")) {
+				ArrayList<String> firstLeft2 = firstFollow(par.getRight().getLeft()); // a,b, c
+				ArrayList<String> followRight = follow(par.getLeft()); // a,b, c
+				res = !firstLeft2.removeAll(followRight);
+				if (!res) {
+					System.out.println(par.getLeft());
+					break;
+				}
+			}
+		}
+		return res;
+	}
 
 }
