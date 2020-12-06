@@ -1,0 +1,11 @@
+<id,0>
+<igual,>
+<id,1>
+<menos,>
+<abreParentesis,>
+<id,1>
+<menos,>
+<id,2>
+<cierraParentesis,>
+<puntoYcoma,>
+<puntoYcoma,>

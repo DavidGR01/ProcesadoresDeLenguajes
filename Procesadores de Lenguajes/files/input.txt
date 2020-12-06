@@ -1,1 +1,5 @@
-aya - (adios - susmuertos);
+oscar = x - (x - y);
+
+while(david < 100){
+	if(hola-2 <40) alert('Hola'); 
+	}

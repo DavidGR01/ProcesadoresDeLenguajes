@@ -12,6 +12,8 @@ public class Main {
 		
 		System.out.println(ASint.LL1());
 		
+		
+		
 		ALex.toFileGE();
 		ALex.toFileTS();
 
@@ -19,11 +21,12 @@ public class Main {
 
 		ALex.closeFile();
 
-//		for (String s : ASint.gram.keySet()) {
-//			System.out.println("First (" + s+") " + ASint.first(s));
-//			System.out.println("Follow (" + s+") " + ASint.follow(s));
-//		}
+		for (String s : ASint.gram.keySet()) {
+			System.out.println("First (" + s+") " + ASint.first(s));
+			System.out.println("Follow (" + s+") " + ASint.follow(s));
+		}
 
 	}
+	
 
 }
