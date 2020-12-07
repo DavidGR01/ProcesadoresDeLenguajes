@@ -572,6 +572,11 @@ public class ASint {
 		}
 		return res;
 	}
+//	System.out.println("First("+par.getRight().getLeft()+") ="+firstLeft +" intesección" + "First("+par.getRight().getRight()+") ="+firstRight);
+//	res = !firstLeft.removeAll(firstRight); 
+//	System.out.println("Intersección :"+res);
+//	if (!res) {
+//		System.out.println("La regla "+par.getLeft()+" no cumple la condición LL(1)");
 
 	// BY DAVIDGR01
 	// Funcion para validar la gramatica
@@ -586,24 +591,31 @@ public class ASint {
 		}
 		ArrayList<Pair<String, Pair<ArrayList<String>, ArrayList<String>>>> combinaciones = getCombinaciones(
 				masDeDosProds);
-
+		int cont = 1;
 		for (Pair<String, Pair<ArrayList<String>, ArrayList<String>>> par : combinaciones) {
 			ArrayList<String> firstLeft = firstFollow(par.getRight().getLeft()); // a,b, c
 			ArrayList<String> firstRight = firstFollow(par.getRight().getRight()); // g,
+			if(cont % 2 != 0)
+			System.out.println("First("+par.getRight().getLeft()+") ="+firstLeft +" intesección" + " First("+par.getRight().getRight()+") ="+firstRight);
 			res = !firstLeft.removeAll(firstRight);
+			if(cont % 2 != 0)
+			System.out.println("Intersección :"+!res);
 			if (!res) {
-				System.out.println(par.getLeft());
+				System.out.println("La regla "+par.getLeft()+" no cumple la condición LL(1)");
 				break;
 			}
 			if (firstRight.contains("lambda")) {
 				ArrayList<String> firstLeft2 = firstFollow(par.getRight().getLeft()); // a,b, c
 				ArrayList<String> followRight = follow(par.getLeft()); // a,b, c
+				System.out.println("Follow("+par.getLeft()+") ="+followRight +" intesección" + " First("+par.getRight().getLeft()+") ="+firstLeft);
 				res = !firstLeft2.removeAll(followRight);
+				System.out.println("Intersección :"+!res);
 				if (!res) {
-					System.out.println(par.getLeft());
+					System.out.println("La regla "+par.getLeft()+" no cumple la condición LL(1)");
 					break;
 				}
 			}
+			cont++;
 		}
 		return res;
 	}
