@@ -25,7 +25,7 @@ public class ALex {
 		TS = new TablaSimbolos();
 		GestorErrores.rellenarMap();
 		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta files
-												// Cambiar a leer por argimentos
+												// Cambiar a leer por argumentos
 		fr = new FileReader(f);
 		br = new BufferedReader(fr);
 		car = br.read();
@@ -45,7 +45,7 @@ public class ALex {
 			// EOF
 			if (car == -1)
 				return new Pair<String, String>("$", "");
-			
+
 			if (car == 10)
 				line++;
 			col = columna(estado, car);
@@ -64,7 +64,7 @@ public class ALex {
 					break;
 				case "B":
 					lexema = "";
-					if(car!=39)
+					if (car != 39)
 						lexema += (char) car;
 					car = br.read();
 					break;
@@ -96,7 +96,7 @@ public class ALex {
 					break;
 				case "H":
 					if (buscarPR(lexema)) {
-						if (lexema == "true" || lexema == "false")
+						if (lexema.equals("true") || lexema.equals("false"))
 							token = new Pair<String, String>("logico", lexema);
 						else
 							token = new Pair<String, String>(lexema, "");
@@ -113,8 +113,8 @@ public class ALex {
 						GestorErrores.addError("55", line, "Léxico");
 						estado = 0;
 					} else {
-						token = new Pair<String, String>("cadena", lexema);
-						car=br.read();
+						token = new Pair<String, String>("cadena", "\"" + lexema + "\"");
+						car = br.read();
 						return Tokens.toFile(token);
 					}
 					car = br.read();

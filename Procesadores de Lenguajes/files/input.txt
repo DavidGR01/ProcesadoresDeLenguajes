@@ -1,5 +1,8 @@
-oscar = x - (x - y);
+number x;  //Falta let
+ = 5;		// Falta identificador
+function number factorial(number x){
+	if(x < 1 return 1; // Falta )
+	return factorial(x-1);
+	function number suma(number a){} // Fallo funciones anidadas
+}
 
-while(david < 100){
-	if(hola-2 <40) alert('Hola'); 
-	}
