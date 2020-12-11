@@ -1,4 +1,5 @@
 TABLA PRINCIPAL #1:
-*'oscar'
 *'x'
-*'y'
+*'factorial'
+*'suma'
+*'a'

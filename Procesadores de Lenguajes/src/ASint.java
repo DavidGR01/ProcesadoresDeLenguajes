@@ -13,7 +13,6 @@ public class ASint {
 	private static ArrayList<String> terminales = new ArrayList<String>();
 	private static ArrayList<String> noTerminales = new ArrayList<String>();
 
-	private static int posToken = 0;
 	private static Pair<String, String> sigToken = null;
 
 	// First y follow
@@ -30,12 +29,12 @@ public class ASint {
 		rellenarGramatica("H", "T", "|", "lambda");
 		rellenarGramatica("A", "T", "id", "K", "|", "lambda");
 		rellenarGramatica("K", ",", "T", "id", "K", "|", "lambda");
-		rellenarGramatica("C", "B", "C", "|", "F", "C", "|", "lambda");
+		rellenarGramatica("C", "B", "C", "|", "S", "C", "|", "lambda");
 		rellenarGramatica("B", "if", "(", "E", ")", "S", "|", "while", "(", "E", ")", "{", "C", "}", "|", "let", "T",
 				"id", ";");
 		rellenarGramatica("S", "id", "W", "|", "alert", "(", "E", ")", ";", "|", "input", "(", "id", ")", ";", "|",
 				"return", "X", ";");
-		rellenarGramatica("W", "=", "E", ";", "|", "(", "L", ")");
+		rellenarGramatica("W", "=", "E", ";", "|", "(", "L", ")", ";");
 		rellenarGramatica("L", "E", "Q", "|", "lambda");
 		rellenarGramatica("Q", ",", "E", "Q", "|", "lambda");
 		rellenarGramatica("X", "E", "|", "lambda");
@@ -169,7 +168,7 @@ public class ASint {
 		return res;
 	}
 
-	public static ArrayList<String> beta(ArrayList<String> prod, String nt) {
+	private static ArrayList<String> beta(ArrayList<String> prod, String nt) {
 		ArrayList<String> res = new ArrayList<>();
 		int indice = prod.indexOf(nt);
 		for (int i = indice + 1; i < prod.size(); i++)
@@ -193,9 +192,34 @@ public class ASint {
 			Parse.add("4");
 			S();
 			P();
-		} else
-			GestorErrores.addError("555", ALex.line, "1"); // Falta código de error
-
+		} else {
+			System.out.println("P");
+			if (sigToken.getLeft().equals("number") || sigToken.getLeft().equals("boolean")
+					|| sigToken.getLeft().equals("string")) {
+				GestorErrores.addError("101", ALex.line, "Sintático");
+				// Al haber error, avanzamos hasta el siguiente ; para seguir analizando errores
+				try {
+					while (!sigToken.getLeft().equals("puntoYcoma"))
+						sigToken = ALex.execALex();
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				P();
+			} else if (traducir(sigToken.getLeft()).equals("=")) {
+				GestorErrores.addError("102", ALex.line, "Sintático");
+				// Al haber error, avanzamos hasta el siguiente ; para seguir analizando errores
+				try {
+					while (!sigToken.getLeft().equals("puntoYcoma"))
+						sigToken = ALex.execALex();
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				P();
+			} else
+				GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void F() {
@@ -210,9 +234,10 @@ public class ASint {
 			equipara("abreCorchete");
 			C();
 			equipara("cierraCorchete");
-		} else
-			GestorErrores.addError("555", ALex.line, "2"); // Falta código de error
-
+		} else {
+			System.out.println("F");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void T() {
@@ -225,8 +250,10 @@ public class ASint {
 		} else if (sigToken.getLeft().equals("string")) {
 			Parse.add("8");
 			equipara("string");
-		} else
-			GestorErrores.addError("555", ALex.line, "3");
+		} else {
+			System.out.println("T");
+			GestorErrores.addError("105", ALex.line, "Sintático");
+		}
 
 	}
 
@@ -236,8 +263,10 @@ public class ASint {
 			T();
 		} else if (followH.contains(traducir(sigToken.getLeft())))
 			Parse.add("10");
-		else
-			GestorErrores.addError("555", ALex.line, "4"); // Falta código de error
+		else {
+			System.out.println("H");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void A() {
@@ -248,8 +277,10 @@ public class ASint {
 			K();
 		} else if (followA.contains(traducir(sigToken.getLeft())))
 			Parse.add("12");
-		else
-			GestorErrores.addError("555", ALex.line, "5"); // Falta código de error
+		else {
+			System.out.println("A");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void K() {
@@ -261,8 +292,10 @@ public class ASint {
 			K();
 		} else if (followK.contains(traducir(sigToken.getLeft())))
 			Parse.add("14");
-		else
-			GestorErrores.addError("555", ALex.line, "6"); // Falta código de error
+		else {
+			GestorErrores.addError("106", ALex.line, "Sintático");
+			A();
+		}
 	}
 
 	private static void C() {
@@ -270,14 +303,32 @@ public class ASint {
 			Parse.add("15");
 			B();
 			C();
-		} else if (firstF.contains(traducir(sigToken.getLeft()))) {
+		} else if (firstS.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("16");
-			F();
+			S();
 			C();
 		} else if (followC.contains(traducir(sigToken.getLeft())))
 			Parse.add("17");
-		else
-			GestorErrores.addError("555", ALex.line, "7"); // Falta código de error
+		else {
+			System.out.println("C");
+
+			if (sigToken.getLeft().equals("number") || sigToken.getLeft().equals("boolean")
+					|| sigToken.getLeft().equals("string"))
+				GestorErrores.addError("101", ALex.line, "Sintático");
+			else if (sigToken.getLeft().equals("function")) {
+				GestorErrores.addError("113", ALex.line, "Sintático");
+				try {
+					while (!sigToken.getLeft().equals("cierraCorchete")) // Asumimos que esta funcion esta bien.
+																			// Podriamos parar si quisieramos tambien
+						sigToken = ALex.execALex();
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				C();
+			} else
+				GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void B() {
@@ -303,8 +354,10 @@ public class ASint {
 			T();
 			equipara("id");
 			equipara("puntoYcoma");
-		} else
-			GestorErrores.addError("555", ALex.line, "7"); // Falta código de error
+		} else {
+			System.out.println("B");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void S() {
@@ -331,8 +384,10 @@ public class ASint {
 			equipara("return");
 			X();
 			equipara("puntoYcoma");
-		} else
-			GestorErrores.addError("555", ALex.line, "7"); // Falta código de error
+		} else {
+			System.out.println("S");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void W() {
@@ -346,8 +401,19 @@ public class ASint {
 			equipara("abreParentesis");
 			L();
 			equipara("cierraParentesis");
-		} else
-			GestorErrores.addError("555", ALex.line, "8"); // Falta código de error
+			equipara("puntoYcoma");
+		} else {
+			System.out.println("W");
+			GestorErrores.addError("107", ALex.line, "Sintático");
+			try {
+				while (!sigToken.getLeft().equals("puntoYcoma"))
+					sigToken = ALex.execALex();
+				sigToken = ALex.execALex();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			P();
+		}
 	}
 
 	private static void L() {
@@ -357,8 +423,10 @@ public class ASint {
 			Q();
 		} else if (followL.contains(traducir(sigToken.getLeft())))
 			Parse.add("28");
-		else
-			GestorErrores.addError("555", ALex.line, "9"); // Falta código de error
+		else {
+			System.out.println("L");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void Q() {
@@ -369,8 +437,10 @@ public class ASint {
 			Q();
 		} else if (followQ.contains(traducir(sigToken.getLeft())))
 			Parse.add("30");
-		else
-			GestorErrores.addError("555", ALex.line, "10"); // Falta código de error
+		else {
+			System.out.println("Q");
+			GestorErrores.addError("106", ALex.line, "Sintático");
+		}
 	}
 
 	private static void X() {
@@ -379,8 +449,10 @@ public class ASint {
 			E();
 		} else if (followX.contains(traducir(sigToken.getLeft())))
 			Parse.add("32");
-		else
-			GestorErrores.addError("555", ALex.line, "11"); // Falta código de error
+		else {
+			System.out.println("X");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void E() {
@@ -388,8 +460,10 @@ public class ASint {
 			Parse.add("33");
 			R();
 			Y();
-		} else
-			GestorErrores.addError("555", ALex.line, "12"); // Falta código de error
+		} else {
+			System.out.println("E");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void Y() {
@@ -405,8 +479,10 @@ public class ASint {
 			Y();
 		} else if (followY.contains(traducir(sigToken.getLeft())))
 			Parse.add("36");
-		else
-			GestorErrores.addError("555", ALex.line, "13"); // Falta código de error
+		else {
+//			System.out.println("Y");
+//			GestorErrores.addError("108", ALex.line, "Sintático");
+		}
 	}
 
 	private static void R() {
@@ -417,8 +493,10 @@ public class ASint {
 		} else if (firstU.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("38");
 			U();
-		} else
-			GestorErrores.addError("555", ALex.line, "14"); // Falta código de error
+		} else {
+			System.out.println("R *********(CREO QUE FALTAN LOS FIRST DE U y V + !)");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void U() {
@@ -429,8 +507,10 @@ public class ASint {
 		} else if (firstV.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("40");
 			V();
-		} else
-			GestorErrores.addError("555", ALex.line, "15"); // Falta código de error
+		} else {
+			System.out.println("U *********(CREO QUE FALTAN LOS FIRST DE V O ++)");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void V() {
@@ -452,8 +532,10 @@ public class ASint {
 		} else if (sigToken.getLeft().equals("logico")) {
 			Parse.add("45");
 			equipara("logico");
-		} else
-			GestorErrores.addError("555", ALex.line, "16"); // Falta código de error
+		} else {
+			System.out.println("V");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
 	}
 
 	private static void Z() {
@@ -464,19 +546,33 @@ public class ASint {
 			equipara("cierraParentesis");
 		} else if (followZ.contains(traducir(sigToken.getLeft())))
 			Parse.add("47");
-		else
-			GestorErrores.addError("555", ALex.line, "17"); // Falta código de error
+		else {
+			System.out.println("Z");
+			GestorErrores.addError("104", ALex.line, "Sintático");
+		}
 	}
 
 	private static void equipara(String t) {
-		if (sigToken.getLeft().equals(t))
+		if (sigToken.getLeft().equals(t)) {
 			try {
 				sigToken = ALex.execALex();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		else
-			GestorErrores.addError("555", ALex.line, "Sintactico");
+		} else {
+			if (t.equals("id"))
+				GestorErrores.addError("110", ALex.line, "Sintactico");
+			if (t.equals("abreParentesis"))
+				GestorErrores.addError("104", ALex.line, "Sintactico");
+			if (t.equals("cierraParentesis"))
+				GestorErrores.addError("111", ALex.line, "Sintactico");
+			if (t.equals("abreCorchete"))
+				GestorErrores.addError("103", ALex.line, "Sintactico");
+			if (t.equals("cierraCorchete"))
+				GestorErrores.addError("110", ALex.line, "Sintactico");
+			if (t.equals("puntoYcoma"))
+				GestorErrores.addError("112", ALex.line, "Sintactico");
+		}
 	}
 
 	private static void rellenarGramatica(String... strings) {
@@ -586,24 +682,35 @@ public class ASint {
 		}
 		ArrayList<Pair<String, Pair<ArrayList<String>, ArrayList<String>>>> combinaciones = getCombinaciones(
 				masDeDosProds);
-
+		int cont = 1;
 		for (Pair<String, Pair<ArrayList<String>, ArrayList<String>>> par : combinaciones) {
+			if (cont % 2 != 0)
+				System.out.println("Regla: " + par.getLeft());
 			ArrayList<String> firstLeft = firstFollow(par.getRight().getLeft()); // a,b, c
 			ArrayList<String> firstRight = firstFollow(par.getRight().getRight()); // g,
+			if (cont % 2 != 0)
+				System.out.println("First(" + par.getRight().getLeft() + ") =" + firstLeft + " intersección" + " First("
+						+ par.getRight().getRight() + ") =" + firstRight);
 			res = !firstLeft.removeAll(firstRight);
+			if (cont % 2 != 0)
+				System.out.println("Intersección :" + !res);
 			if (!res) {
-				System.out.println(par.getLeft());
+				System.out.println("La regla " + par.getLeft() + " no cumple la condición LL(1)");
 				break;
 			}
 			if (firstRight.contains("lambda")) {
 				ArrayList<String> firstLeft2 = firstFollow(par.getRight().getLeft()); // a,b, c
 				ArrayList<String> followRight = follow(par.getLeft()); // a,b, c
+				System.out.println("Follow(" + par.getLeft() + ") =" + followRight + " intersección" + " First("
+						+ par.getRight().getLeft() + ") =" + firstLeft);
 				res = !firstLeft2.removeAll(followRight);
+				System.out.println("Intersección :" + !res);
 				if (!res) {
-					System.out.println(par.getLeft());
+					System.out.println("La regla " + par.getLeft() + " no cumple la condición LL(1)");
 					break;
 				}
 			}
+			cont++;
 		}
 		return res;
 	}
