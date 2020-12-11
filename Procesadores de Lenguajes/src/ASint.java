@@ -668,6 +668,11 @@ public class ASint {
 		}
 		return res;
 	}
+//	System.out.println("First("+par.getRight().getLeft()+") ="+firstLeft +" intesección" + "First("+par.getRight().getRight()+") ="+firstRight);
+//	res = !firstLeft.removeAll(firstRight); 
+//	System.out.println("Intersección :"+res);
+//	if (!res) {
+//		System.out.println("La regla "+par.getLeft()+" no cumple la condición LL(1)");
 
 	// BY DAVIDGR01
 	// Funcion para validar la gramatica

@@ -2,3 +2,4 @@ Error Sintático: Código: 101: Falta el prefijo let para la declaración de var
 Error Sintático: Código: 102: Falta parte izquierda de la asignación en la línea 2
 Error Sintactico: Código: 111: Falta paréntesis de cierre en la línea 4
 Error Sintático: Código: 113: No se permiten funciones anidadas en la línea 6
+

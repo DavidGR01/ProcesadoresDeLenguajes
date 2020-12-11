@@ -1,5 +1,0 @@
-TABLA PRINCIPAL #1:
-*'x'
-*'factorial'
-*'suma'
-*'a'
