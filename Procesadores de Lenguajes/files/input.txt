@@ -1,8 +1,2 @@
-let number x;  //Falta let
- x = 5;		// Falta identificador
-function number factorial(number x){
-	if(x < 1 ) // Falta )
-	x = ++x - 3;
-	return factorial(x-1);
-}
-
+let number x; 
+ x = ++x - 3;		
