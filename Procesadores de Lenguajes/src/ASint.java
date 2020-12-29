@@ -16,9 +16,9 @@ public class ASint {
 	private static Pair<String, String> sigToken = null;
 
 	// First y follow
-	private static ArrayList<String> firstR, firstU, firstV, firstE, firstS, firstT, firstF, firstB;
+	private static ArrayList<String> firstR, firstU, firstV, firstE, firstS, firstT, firstF, firstB, firstY;
 
-	private static ArrayList<String> followP, followC, followY, followZ, followX, followL, followQ, followA, followK,
+	private static ArrayList<String> followP, followC, followY, followZ, followX, followL, followQ, followA, followK, followN, followM,
 			followH;
 
 	public static void execASint() throws IOException {
@@ -38,9 +38,11 @@ public class ASint {
 		rellenarGramatica("L", "E", "Q", "|", "lambda");
 		rellenarGramatica("Q", ",", "E", "Q", "|", "lambda");
 		rellenarGramatica("X", "E", "|", "lambda");
-		rellenarGramatica("E", "R", "Y");
-		rellenarGramatica("Y", "<", "R", "Y", "|", "-", "R", "Y", "|", "lambda");
-		rellenarGramatica("R", "!", "R", "|", "U");
+		rellenarGramatica("E", "R", "M");     //E -> RY ----- E-> RM
+		rellenarGramatica("M", "<", "R", "M", "|", "lambda"); //Y-> <RY|-RY|lambda ------- M -> <RM|lambda
+		rellenarGramatica("R", "Y", "N"); //R -> !R|U --- R-> YN
+		rellenarGramatica("N","-","Y","N","|","lambda");
+		rellenarGramatica("Y", "!", "Y", "|", "U");
 		rellenarGramatica("U", "++", "U", "|", "V");
 		rellenarGramatica("V", "id", "Z", "|", "(", "E", ")", "|", "entero", "|", "cadena", "|", "logico");
 		rellenarGramatica("Z", "(", "L", ")", "|", "lambda");
@@ -56,6 +58,7 @@ public class ASint {
 		firstE = first("E");
 		firstS = first("S");
 		firstT = first("T");
+		firstY = first("Y");
 		followX = follow("X");
 		followP = follow("P");
 		followC = follow("C");
@@ -66,6 +69,8 @@ public class ASint {
 		followA = follow("A");
 		followH = follow("H");
 		followK = follow("K");
+		followM = follow("M");
+		followN = follow("N");
 
 		sigToken = ALex.execALex();
 
@@ -459,53 +464,72 @@ public class ASint {
 		if (firstR.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("33");
 			R();
-			Y();
+			M();
 		} else {
 			System.out.println("E");
 			GestorErrores.addError("100", ALex.line, "Sintático");
 		}
 	}
-
-	private static void Y() {
-		if (sigToken.getLeft().equals("menorEstricto")) {
+	private static void M() {
+		if(traducir(sigToken.getLeft()).equals("<")) {
 			Parse.add("34");
 			equipara("menorEstricto");
 			R();
-			Y();
-		} else if (sigToken.getLeft().equals("menos")) {
+			M();
+		} else if (followM.contains(traducir(sigToken.getLeft())))
 			Parse.add("35");
-			equipara("menos");
-			R();
-			Y();
-		} else if (followY.contains(traducir(sigToken.getLeft())))
-			Parse.add("36");
 		else {
+//			System.out.println("M");
+//			GestorErrores.addError("108", ALex.line, "Sintático");
+		}
+	}
+	private static void R() {
+		if (firstY.contains(traducir(sigToken.getLeft()))) {
+			Parse.add("36");
+			Y();
+			N();
+		} else {
+			System.out.println("R");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
+	}
+
+	private static void N() {
+		if (sigToken.getLeft().equals("menos")) {
+			Parse.add("37");
+			equipara("menos");
+			Y();
+			N();
+		} else if (followN.contains(traducir(sigToken.getLeft())))
+			Parse.add("38");
+		else {
+			System.out.println("N");
+			GestorErrores.addError("100", ALex.line, "Sintático");
+		}
+		
+	}
+
+	private static void Y() {
+		if (sigToken.getLeft().equals("exclamacion")) {
+			Parse.add("39");
+			equipara("exclamacion");
+			Y();
+		} else if (firstU.contains(traducir(sigToken.getLeft()))) {
+			Parse.add("40");
+			U();
+		}else {
 //			System.out.println("Y");
 //			GestorErrores.addError("108", ALex.line, "Sintático");
 		}
 	}
 
-	private static void R() {
-		if (sigToken.getLeft().equals("exclamacion")) {
-			Parse.add("37");
-			equipara("exclamacion");
-			R();
-		} else if (firstU.contains(traducir(sigToken.getLeft()))) {
-			Parse.add("38");
-			U();
-		} else {
-			System.out.println("R *********(CREO QUE FALTAN LOS FIRST DE U y V + !)");
-			GestorErrores.addError("100", ALex.line, "Sintático");
-		}
-	}
-
 	private static void U() {
 		if (sigToken.getLeft().equals("incrementador")) {
-			Parse.add("39");
+			Parse.add("41");
 			equipara("incrementador");
 			U();
 		} else if (firstV.contains(traducir(sigToken.getLeft()))) {
-			Parse.add("40");
+			Parse.add("42");
 			V();
 		} else {
 			System.out.println("U *********(CREO QUE FALTAN LOS FIRST DE V O ++)");
@@ -515,22 +539,22 @@ public class ASint {
 
 	private static void V() {
 		if (sigToken.getLeft().equals("id")) {
-			Parse.add("41");
+			Parse.add("43");
 			equipara("id");
 			Z();
 		} else if (sigToken.getLeft().equals("abreParentesis")) {
-			Parse.add("42");
+			Parse.add("44");
 			equipara("abreParentesis");
 			E();
 			equipara("cierraParentesis");
 		} else if (sigToken.getLeft().equals("entero")) {
-			Parse.add("43");
+			Parse.add("45");
 			equipara("entero");
 		} else if (sigToken.getLeft().equals("cadena")) {
-			Parse.add("44");
+			Parse.add("46");
 			equipara("cadena");
 		} else if (sigToken.getLeft().equals("logico")) {
-			Parse.add("45");
+			Parse.add("47");
 			equipara("logico");
 		} else {
 			System.out.println("V");
@@ -540,12 +564,12 @@ public class ASint {
 
 	private static void Z() {
 		if (sigToken.getLeft().equals("abreParentesis")) {
-			Parse.add("46");
+			Parse.add("48");
 			equipara("abreParentesis");
 			L();
 			equipara("cierraParentesis");
 		} else if (followZ.contains(traducir(sigToken.getLeft())))
-			Parse.add("47");
+			Parse.add("49");
 		else {
 			System.out.println("Z");
 			GestorErrores.addError("104", ALex.line, "Sintático");
@@ -602,7 +626,7 @@ public class ASint {
 				"input", "return", "if", "while", "let", "number", "boolean", "logico", "string", "function", ",", "{",
 				"}"));
 		noTerminales.addAll(Arrays.asList("E", "R", "U", "V", "S", "L", "Q", "X", "B", "T", "F", "H", "A", "K", "C",
-				"P", "W", "Y", "Z"));
+				"P", "W", "Y", "Z","N","M"));
 	}
 
 	private static String traducir(String s) {
@@ -674,7 +698,7 @@ public class ASint {
 //	if (!res) {
 //		System.out.println("La regla "+par.getLeft()+" no cumple la condición LL(1)");
 
-	// BY DAVIDGR01
+	
 	// Funcion para validar la gramatica
 	public static boolean LL1() {
 		boolean res = true;
