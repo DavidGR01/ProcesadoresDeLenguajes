@@ -10,7 +10,7 @@ public class GestorErrores {
 	private static List<String> errores = new ArrayList<>();
 
 	public static void addError(String cod, int linea, String tipoError) {
-		String s = "Error " + tipoError + ": Código: " + cod + ": " + map.get(cod) + " en la línea " + linea + "\n";
+		String s = "Error " + tipoError + ": " + map.get(cod) + ". En la línea " + linea + "\n";
 		errores.add(s);
 		System.out.println(s);
 	}
@@ -38,6 +38,7 @@ public class GestorErrores {
 		map.put("111", "Falta paréntesis de cierre");
 		map.put("112", "Se esperaba un punto y coma");
 		map.put("113", "No se permiten funciones anidadas");
+		map.put("200", "Semántico Genérico");
 	}
 
 	public static void toFile() throws IOException {
