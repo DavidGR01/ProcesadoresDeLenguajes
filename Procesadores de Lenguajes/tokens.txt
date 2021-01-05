@@ -1,11 +1,4 @@
-<let,>
-<number,>
-<id,0>
-<puntoYcoma,>
 <id,0>
 <igual,>
-<incrementador,>
-<id,0>
-<menos,>
-<entero,3>
+<cadena,"Hola">
 <puntoYcoma,>

@@ -1,16 +1,18 @@
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Entrada {
 
-	private String lexema, tipo, desplazamiento, numParam, tipoDev, etiq;
+	private String lexema, tipo, desplazamiento, tipoDev, etiq;
+	private int numParam;
 	private List<String> nombres;
-	private List<String> atributos;
-	private List<String> tipoParam = new ArrayList<>();
-	private List<String> modoPaso = new ArrayList<>();
+	private List<Pair<String, String>> toPrint= new ArrayList<>();
+	private ArrayList<String> tipoParam = new ArrayList<>();
 
 	public Entrada(String lexema) {
 		this.lexema = lexema;
+		numParam = 0;
 	}
 
 	public String getLexema() {
@@ -27,6 +29,7 @@ public class Entrada {
 
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
+		toPrint.add(new Pair<String, String>("Tipo", tipo));
 	}
 
 	public String getDesplazamiento() {
@@ -35,22 +38,26 @@ public class Entrada {
 
 	public void setDesplazamiento(String desplazamiento) {
 		this.desplazamiento = desplazamiento;
+		toPrint.add(new Pair<String, String>("Despl", desplazamiento));
 	}
 
-	public String getNumParam() {
+	public int getNumParam() {
 		return numParam;
 	}
 
-	public void setNumParam(String numParam) {
+	public void setNumParam(int numParam) {
 		this.numParam = numParam;
+		toPrint.add(new Pair<String, String>("NumParam", "" + numParam)); // No hace falta creo
 	}
 
-	public List<String> getTipoParam() {
+	public ArrayList<String> getTipoParam() {
 		return tipoParam;
 	}
 
 	public void addTipoParam(String tipoParam) {
 		this.tipoParam.add(tipoParam);
+		DecimalFormat format = new DecimalFormat("0#");
+		toPrint.add(new Pair<String, String>("TipoParam" + format.format(numParam++), tipoParam));
 	}
 
 	public String getTipoDev() {
@@ -59,6 +66,7 @@ public class Entrada {
 
 	public void setTipoDev(String tipoDev) {
 		this.tipoDev = tipoDev;
+		toPrint.add(new Pair<String, String>("TipoRetorno", tipoDev));
 	}
 
 	public String getEtiq() {
@@ -67,14 +75,18 @@ public class Entrada {
 
 	public void setEtiq(String etiq) {
 		this.etiq = etiq;
+		toPrint.add(new Pair<String, String>("EtiqFuncion", etiq));
 	}
 
 	@Override
 	public String toString() {
 		String res = "*'" + lexema + "'\n";
-		/*
-		 * for(String s:atributos) { res += }
-		 */
+
+		if (tipo.equals("function"))
+			toPrint.add(new Pair<String, String>("NumParam", "" + numParam));
+
+		for (Pair<String, String> par : toPrint)
+			res += "+" + par.getLeft() + ":'" + par.getRight() + "'\n";
 		return res;
 	}
 }

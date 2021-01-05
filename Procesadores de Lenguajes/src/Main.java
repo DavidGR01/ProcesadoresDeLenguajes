@@ -4,8 +4,6 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 
-		ALex alex = new ALex();
-
 		Tokens.clearFile();
 
 		ASint.execASint();
@@ -18,6 +16,8 @@ public class Main {
 		Parse.toFile();
 
 		ALex.closeFile();
+		
+		System.out.println("Correcto");
 
 //		for (String s : ASint.gram.keySet()) {
 //			System.out.println("First (" + s + ") " + ASint.first(s));

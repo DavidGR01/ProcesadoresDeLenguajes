@@ -1,2 +1,2 @@
-TABLA PRINCIPAL #1:
+TABLA #0:
 *'x'

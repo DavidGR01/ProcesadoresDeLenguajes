@@ -22,7 +22,7 @@ public class ALex {
 		rellenarPR();
 
 		// Vamos leyendo el archivo
-		TS = new TablaSimbolos();
+		TS = ASint.TSActual;
 		GestorErrores.rellenarMap();
 		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta files
 												// Cambiar a leer por argumentos
@@ -82,7 +82,7 @@ public class ALex {
 						GestorErrores.addError("56", line, "Léxico");
 						estado = 0;
 					} else {
-						token = new Pair<String, String>("entero", valor + ""); /////////////////////////////////////////////////
+						token = new Pair<String, String>("entero", valor + "");
 						return Tokens.toFile(token);
 					}
 					break;
@@ -103,7 +103,7 @@ public class ALex {
 					} else {
 						int p = TS.buscarTS(lexema);
 						if (p == -1)
-							p = TS.insertarTS(new Entrada(lexema));
+							p = TS.insertarLexemaTS(new Entrada(lexema));
 						token = new Pair<String, String>("id", p + "");
 					}
 					return Tokens.toFile(token);
