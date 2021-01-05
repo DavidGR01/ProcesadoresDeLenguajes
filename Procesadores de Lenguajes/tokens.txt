@@ -1,3 +1,4 @@
-<return,>
 <id,0>
+<igual,>
+<cadena,"Hola">
 <puntoYcoma,>

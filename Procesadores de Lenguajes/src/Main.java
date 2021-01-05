@@ -16,11 +16,13 @@ public class Main {
 		Parse.toFile();
 
 		ALex.closeFile();
+		
+		System.out.println("Correcto");
 
-		for (String s : ASint.gram.keySet()) {
-			System.out.println("First (" + s + ") " + ASint.first(s));
-			System.out.println("Follow (" + s + ") " + ASint.follow(s));
-		}
+//		for (String s : ASint.gram.keySet()) {
+//			System.out.println("First (" + s + ") " + ASint.first(s));
+//			System.out.println("Follow (" + s + ") " + ASint.follow(s));
+//		}
 
 	}
 
