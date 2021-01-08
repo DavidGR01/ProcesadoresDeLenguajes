@@ -7,7 +7,7 @@ public class Entrada {
 	private String lexema, tipo, desplazamiento, tipoDev, etiq;
 	private int numParam;
 	private List<String> nombres;
-	private List<Pair<String, String>> toPrint= new ArrayList<>();
+	private List<Pair<String, String>> toPrint = new ArrayList<>();
 	private ArrayList<String> tipoParam = new ArrayList<>();
 
 	public Entrada(String lexema) {
@@ -56,8 +56,7 @@ public class Entrada {
 
 	public void addTipoParam(String tipoParam) {
 		this.tipoParam.add(tipoParam);
-		DecimalFormat format = new DecimalFormat("0#");
-		toPrint.add(new Pair<String, String>("TipoParam" + format.format(numParam++), tipoParam));
+		toPrint.add(new Pair<String, String>("TipoParam" + String.format("%02d",numParam++), tipoParam));
 	}
 
 	public String getTipoDev() {
@@ -82,7 +81,7 @@ public class Entrada {
 	public String toString() {
 		String res = "*'" + lexema + "'\n";
 
-		if (tipo.equals("function"))
+		if (tipo != null && tipo.equals("function"))
 			toPrint.add(new Pair<String, String>("NumParam", "" + numParam));
 
 		for (Pair<String, String> par : toPrint)

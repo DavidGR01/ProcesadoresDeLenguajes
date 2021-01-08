@@ -1,7 +1,7 @@
 
 public class TSCounter {
 
-	private static int counter = 0;
+	private static int counter = 1;
 
 	public static int getCounter() {
 		return counter++;

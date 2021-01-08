@@ -1,0 +1,12 @@
+function number resta(number x, number y){
+	let number t;
+	return t;
+}
+let number y;
+let number po;
+let number f;
+
+function number suma(number x, number y){
+	let number t;
+	return t;
+}
