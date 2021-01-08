@@ -24,14 +24,15 @@ public class ALex {
 		// Vamos leyendo el archivo
 		TS = ASint.TSActual;
 		GestorErrores.rellenarMap();
-		File f = new File("files/input.txt"); // El archivo tiene que estar en la carpeta files
-												// Cambiar a leer por argumentos
+		File f = new File("input.txt"); // Cambiar a leer por argumentos
 		fr = new FileReader(f);
 		br = new BufferedReader(fr);
 		car = br.read();
 	}
 
 	public static Pair<String, String> execALex() throws IOException {
+
+		TS = ASint.TSActual;
 
 		int estado = 0;
 		int col = 0;
@@ -101,10 +102,29 @@ public class ALex {
 						else
 							token = new Pair<String, String>(lexema, "");
 					} else {
-						int p = TS.buscarTS(lexema);
-						if (p == -1)
-							p = TS.insertarLexemaTS(new Entrada(lexema));
-						token = new Pair<String, String>("id", p + "");
+						if (ASint.zonaDecl) {
+							int p = TS.buscarTS(lexema);
+							if (p != -1) {
+								System.out.println("E1");
+								GestorErrores.addError("200", ALex.line, "Semántico"); // El id ya está declarado
+							} else {
+								p = TS.insertarLexemaTS(new Entrada(lexema));
+								token = new Pair<String, String>("id", p + "");
+							}
+						} else {
+							int p1 = ASint.TSActual.buscarTS(lexema);
+							int p2 = ASint.TSG.buscarTS(lexema);
+
+							if (p1 == -1 && p2 == -1) {
+								System.out.println("E1");
+								GestorErrores.addError("200", ALex.line, "Semántico"); // El id no está declarado
+							}else {
+								if(p1 == -1)
+									token = new Pair<String, String>("id", p2 + "");
+								else
+									token = new Pair<String, String>("id", p1 + "");
+							}
+						}
 					}
 					return Tokens.toFile(token);
 				case "I":

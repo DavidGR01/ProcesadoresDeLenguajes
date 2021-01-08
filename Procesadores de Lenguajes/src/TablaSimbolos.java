@@ -82,15 +82,21 @@ public class TablaSimbolos {
 		// Sobreescribe cualquier archivo anterior con el mismo nombre
 		FileWriter writer;
 		try {
-			writer = new FileWriter("TS.txt");
+			writer = new FileWriter("TS.txt",true);
 			if (!TS.isEmpty())
-				writer.write("TABLA #" + id + ":\n");
+				writer.write("TABLA #" + String.format("%02d",id) + ":\n");
 			for (Entrada e : TS)
 				writer.write(e.toString());
 			writer.close();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+	}
+
+	public static void clearFile() throws IOException {
+		FileWriter myWriter = new FileWriter("TS.txt");
+		myWriter.write("");
+		myWriter.close();
 	}
 
 }

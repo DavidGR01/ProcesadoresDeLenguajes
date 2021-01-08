@@ -5,19 +5,19 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 
 		Tokens.clearFile();
+		TablaSimbolos.clearFile();
 
 		ASint.execASint();
 
 		//ASint.LL1();
 
 		ALex.toFileGE();
-		ALex.toFileTS();
+		//ALex.toFileTS();
 
 		Parse.toFile();
 
 		ALex.closeFile();
 		
-		System.out.println("Correcto");
 
 //		for (String s : ASint.gram.keySet()) {
 //			System.out.println("First (" + s + ") " + ASint.first(s));

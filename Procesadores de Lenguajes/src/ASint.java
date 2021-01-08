@@ -21,12 +21,14 @@ public class ASint {
 	private static ArrayList<String> followP, followC, followZ, followX, followL, followQ, followA, followK, followN,
 			followM, followH;
 
-	// Tablas
-
-	private static TablaSimbolos TSG, TSL;
+	// Tablas de Simbolos
+	public static TablaSimbolos TSG, TSL;
 	public static TablaSimbolos TSActual;
 	private static int DespG, DespL;
 	static boolean zonaDecl;
+
+	// Constantes
+	private static String TIPO_ERROR = "tipo_error", TIPO_OK = "tipo_ok";
 
 	public static void execASint() throws IOException {
 
@@ -84,9 +86,9 @@ public class ASint {
 		DespG = 0;
 		zonaDecl = true;
 
-		ALex alex = new ALex();		
-		sigToken = ALex.execALex();		
-		
+		ALex alex = new ALex();
+		sigToken = ALex.execALex();
+
 		P();
 
 		// {destruir(TSG)}
@@ -247,6 +249,7 @@ public class ASint {
 	private static void F() {
 		if (sigToken.getLeft().equals("function")) {
 			Parse.add("5");
+			zonaDecl = true;
 			equipara("function");
 			String tipoDev = H();
 			int pos = Integer.parseInt(sigToken.getRight());
@@ -261,6 +264,7 @@ public class ASint {
 			equipara("abreParentesis");
 			ArrayList<String> tipoArgs = A();
 			equipara("cierraParentesis");
+			zonaDecl = false;
 
 			for (String s : tipoArgs)
 				TSG.insertarTipoParamTS(pos, s);
@@ -273,14 +277,12 @@ public class ASint {
 
 			if (!tipos[1].equals(tipoDev))
 				GestorErrores.addError("200", ALex.line, "Semántico"); // Tipo Retorno Incorrecto
-			if (tipos[0].equals("tipo_error"))
-				GestorErrores.addError("200", ALex.line, "Semántico"); // Cuerpo de la función incorrecto
-			// Podriamos crear un tpo_error_ret
 
 			// Destruye TSL
 			TSActual.toFile();
-			TSActual = null;
+			TSL = null;
 			TSActual = TSG;
+			DespL = 0;
 		} else {
 			System.out.println("F");
 			GestorErrores.addError("100", ALex.line, "Sintático");
@@ -288,9 +290,7 @@ public class ASint {
 	}
 
 	private static String[] T() {
-
 		String[] tipoYAncho = new String[2];
-
 		if (sigToken.getLeft().equals("number")) {
 			Parse.add("6");
 			equipara("number");
@@ -310,7 +310,6 @@ public class ASint {
 			System.out.println("T");
 			GestorErrores.addError("105", ALex.line, "Sintático");
 		}
-
 		return tipoYAncho;
 	}
 
@@ -334,13 +333,16 @@ public class ASint {
 			String[] tipos = T();
 			int pos = Integer.parseInt(sigToken.getRight());
 			equipara("id");
-			ArrayList<String> res = K(new ArrayList<String>());
+
+			ArrayList<String> aux = new ArrayList<String>();
+			aux.add(tipos[0]);
 
 			TSActual.insertarTipoTS(pos, tipos[0]);
 			TSActual.insertarDesplazamientoTS(pos, DespL);
 			DespL += Integer.parseInt(tipos[1]);
 
-			res.add(0, tipos[0]);
+			ArrayList<String> res = K(aux);
+
 			return res;
 		} else if (followA.contains(traducir(sigToken.getLeft())))
 			Parse.add("12");
@@ -381,16 +383,27 @@ public class ASint {
 
 		if (firstB.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("15");
-			B();
-			res = C();
+			String[] be = B();
+			String[] ce1 = C();
+			res[0] = ce1[0].equals(be[0]) && ce1[0].equals(TIPO_OK) ? TIPO_OK : TIPO_ERROR; // No se va a dar tipo error
+
+			if (be[1].equals(ce1[1]))
+				res[1] = be[1];
+			else if (ce1[1].equals("void"))
+				res[1] = be[1];
+			else if (be[1].equals("void"))
+				res[1] = ce1[1];
+			else
+				res[1] = TIPO_ERROR; // En la comparacion con H no coincidirian
+
 		} else if (firstS.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("16");
-			zonaDecl = false;
+			//zonaDecl = false;
 			String[] ese = S();
-			zonaDecl = true;
+			//zonaDecl = true;
 			String[] ce = C();
 
-			res[0] = ese[0].equals(ce[0]) && ce[0].equals("tipo_ok") ? "tipo_ok" : "tipo_error";
+			res[0] = ese[0].equals(ce[0]) && ce[0].equals(TIPO_OK) ? TIPO_OK : TIPO_ERROR;
 
 			if (ese[1].equals(ce[1]))
 				res[1] = ese[1];
@@ -399,11 +412,11 @@ public class ASint {
 			else if (ese[1].equals("void"))
 				res[1] = ce[1];
 			else
-				res[1] = "tipo_error"; // Error en el return de function
+				res[1] = TIPO_ERROR; // En la comparacion con H no coincidirian
 
 		} else if (followC.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("17");
-			res[0] = "tipo_ok";
+			res[0] = TIPO_OK;
 			res[1] = "void";
 		} else {
 			System.out.println("C");
@@ -429,7 +442,8 @@ public class ASint {
 		return res;
 	}
 
-	private static String B() {
+	private static String[] B() {
+		String[] res = new String[2];
 		if (sigToken.getLeft().equals("if")) {
 			Parse.add("18");
 			equipara("if");
@@ -437,7 +451,13 @@ public class ASint {
 			String tipoE = E();
 			equipara("cierraParentesis");
 			String[] tiposS = S();
-			return tipoE.equals("logico") ? tiposS[0] : "tipo_error";
+
+			if (!tipoE.equals("logico")) {
+				GestorErrores.addError("200", ALex.line, "Semántico"); // Condicion debe ser boolean
+				// tipoE = "logico"; // Recuperacion de errores
+			}
+			res[0] = tipoE == "logico" && tiposS[0] == TIPO_OK ? TIPO_OK : TIPO_ERROR; // No se va a dar el tipo_error
+			res[1] = tiposS[1];
 		} else if (sigToken.getLeft().equals("while")) {
 			Parse.add("19");
 			equipara("while");
@@ -447,28 +467,38 @@ public class ASint {
 			equipara("abreCorchete");
 			String[] tiposC = C();
 			equipara("cierraCorchete");
-			return tipoE.equals("logico") ? tiposC[0] : "tipo_error";
+
+			if (!tipoE.equals("logico")) {
+				GestorErrores.addError("200", ALex.line, "Semántico"); // Condicion debe ser boolean
+				// tipoE = "logico"; // Recuperacion de errores
+			}
+			res[0] = tipoE == "logico" && tiposC[0] == TIPO_OK ? TIPO_OK : TIPO_ERROR; // No se va a dar el tipo_error
+			res[1] = tiposC[1];
 		} else if (sigToken.getLeft().equals("let")) {
 			Parse.add("20");
+			zonaDecl = true;
 			equipara("let");
-			String tipos[] = T();
+			String tipoYDesplazamiento[] = T();
 			int pos = Integer.parseInt(sigToken.getRight());
 			equipara("id");
+			zonaDecl = false;
 			equipara("puntoYcoma");
 
-			TSActual.insertarTipoTS(pos, tipos[0]);
+			TSActual.insertarTipoTS(pos, tipoYDesplazamiento[0]);
 			if (TSL == null) {
 				TSG.insertarDesplazamientoTS(pos, DespG);
-				DespG += Integer.parseInt(tipos[1]);
+				DespG += Integer.parseInt(tipoYDesplazamiento[1]);
 			} else {
 				TSL.insertarDesplazamientoTS(pos, DespL);
-				DespL += Integer.parseInt(tipos[1]);
+				DespL += Integer.parseInt(tipoYDesplazamiento[1]);
 			}
+			res[0] = TIPO_OK;
+			res[1] = "void";
 		} else {
 			System.out.println("B");
 			GestorErrores.addError("100", ALex.line, "Sintático");
 		}
-		return "FALLO";
+		return res;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -482,22 +512,28 @@ public class ASint {
 			Object[] uvedoble = W();
 
 			Entrada entrada = TSActual.buscarPos(pos);
-
+//			if (entrada.getTipo() != null) {
 			if (entrada.getTipo().equals("function")) {
 				if (!entrada.getTipoParam().equals((ArrayList<String>) uvedoble[1])) {
-					res[0] = "tipo_error";
-					res[1] = entrada.getTipoDev();
+					GestorErrores.addError("200", ALex.line, "Semántico"); // Argumentos no coinciden. Deberian ser
+																			// entero, string y son string, string
 				} else {
-					res[0] = "tipo_ok";
+					res[0] = TIPO_OK;
 					res[1] = entrada.getTipoDev();
 				}
-			} else if (entrada.getTipo().equals(uvedoble[0])) {
-				res[0] = "tipo_ok";
-				res[1] = "void";
 			} else {
-				res[0] = "tipo_error";
-				res[1] = "void";
+				if (uvedoble[0].equals(entrada.getTipo())) {
+					res[0] = (String) uvedoble[0];
+					res[1] = "void";
+				} else {
+					GestorErrores.addError("200", ALex.line, "Semántico"); // No coinciden los tipos en la asignacion.
+																			// Deberian ser...
+				}
 			}
+//			} else {
+//				res[0] = TIPO_ERROR;
+//				res[1] = "WTF";
+//			}
 		} else if (sigToken.getLeft().equals("alert")) {
 			Parse.add("22");
 			equipara("alert");
@@ -505,28 +541,34 @@ public class ASint {
 			String tipo = E();
 			equipara("cierraParentesis");
 			equipara("puntoYcoma");
-			res[0] = tipo;
+			if (tipo.equals("cadena") || tipo.equals("entero"))
+				res[0] = TIPO_OK;
+			else
+				GestorErrores.addError("200", ALex.line, "Semántico"); // Alert solo puede tener argumentos tipo entero
+																		// o cadena
 			res[1] = "void";
 		} else if (sigToken.getLeft().equals("input")) {
 			Parse.add("23");
 			equipara("input");
 			equipara("abreParentesis");
+			int pos = Integer.parseInt(sigToken.getRight());
 			equipara("id");
 			equipara("cierraParentesis");
 			equipara("puntoYcoma");
-			res[0] = "tipo_ok";
+			String tipo = TSActual.buscarPos(pos).getTipo();
+			if (tipo.equals("cadena") || tipo.equals("entero"))
+				res[0] = TIPO_OK;
+			else
+				GestorErrores.addError("200", ALex.line, "Semántico"); // Input solo puede tener argumentos tipo entero
+																		// o cadena
 			res[1] = "void";
 		} else if (sigToken.getLeft().equals("return")) {
 			Parse.add("24");
 			equipara("return");
 			String tipo = X();
 			equipara("puntoYcoma");
-			if (tipo.equals("tipo_error"))
-				res[0] = "tipo_error";
-			else
-				res[0] = "tipo_ok";
-			res[1] = "void";
-
+			res[0] = TIPO_OK;
+			res[1] = tipo;
 		} else {
 			System.out.println("S");
 			GestorErrores.addError("100", ALex.line, "Sintático");
@@ -535,9 +577,7 @@ public class ASint {
 	}
 
 	private static Object[] W() {
-
 		Object[] res = new Object[2];
-
 		if (sigToken.getLeft().equals("igual")) {
 			Parse.add("25");
 			equipara("igual");
@@ -551,7 +591,7 @@ public class ASint {
 			ArrayList<String> tiposArgs = L();
 			equipara("cierraParentesis");
 			equipara("puntoYcoma");
-			res[0] = "FALLO";
+			res[0] = TIPO_OK; // No se usa
 			res[1] = tiposArgs;
 		} else {
 			System.out.println("W");
@@ -569,19 +609,21 @@ public class ASint {
 	}
 
 	private static ArrayList<String> L() {
+
+		ArrayList<String> res = new ArrayList<>();
 		if (firstE.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("27");
 			String tipo = E();
-			ArrayList<String> tiposArgs = Q(new ArrayList<>());
-			tiposArgs.add(0, tipo);
-			return tiposArgs;
+			ArrayList<String> aux = new ArrayList<>();
+			aux.add(tipo);
+			res = Q(aux);
 		} else if (followL.contains(traducir(sigToken.getLeft())))
 			Parse.add("28");
 		else {
 			System.out.println("L");
 			GestorErrores.addError("100", ALex.line, "Sintático");
 		}
-		return new ArrayList<String>();
+		return res;
 	}
 
 	private static ArrayList<String> Q(ArrayList<String> arr) {
@@ -616,12 +658,12 @@ public class ASint {
 		return "Fallo";
 	}
 
-	private static String E() {
+	private static String E() { // Solo devuelve tipos de datos
 		if (firstR.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("33");
 			String tipoR = R();
 			String tipoM = M();
-			return tipoR.equals(tipoM) && tipoR.equals("tipo_ok") ? "tipo_ok" : "tipo_error";
+			return tipoM.equals("logico") ? "logico" : tipoR;
 		} else {
 			System.out.println("E");
 			GestorErrores.addError("100", ALex.line, "Sintático");
@@ -634,14 +676,16 @@ public class ASint {
 			Parse.add("34");
 			equipara("menorEstricto");
 			String tipoR = R();
-			String tipoM = M();
-			return tipoR.equals(tipoM) && tipoR.equals("entero") ? tipoM : "tipo_error";
+			M();
+			if (!tipoR.equals("entero"))
+				GestorErrores.addError("200", ALex.line, "Semántico"); // Se esperaba un entero
+			else
+				return "logico";
 		} else if (followM.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("35");
-			return "tipo_ok";
 		} else {
-//			System.out.println("M");
-//			GestorErrores.addError("108", ALex.line, "Sintático");
+			System.out.println("M");
+			GestorErrores.addError("108", ALex.line, "Sintático");
 		}
 		return "FALLO";
 	}
@@ -650,8 +694,8 @@ public class ASint {
 		if (firstY.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("36");
 			String tipoY = Y();
-			String tipoN = N();
-			return tipoY.equals(tipoN) && tipoY.equals("tipo_ok") ? "tipo_ok" : "tipo_error";
+			N();
+			return tipoY;
 		} else {
 			System.out.println("R");
 			GestorErrores.addError("100", ALex.line, "Sintático");
@@ -659,21 +703,20 @@ public class ASint {
 		return "FALLO";
 	}
 
-	private static String N() {
+	private static void N() {
 		if (sigToken.getLeft().equals("menos")) {
 			Parse.add("37");
 			equipara("menos");
 			String tipoY = Y();
-			String tipoN = N();
-			return tipoY.equals(tipoN) && tipoN.equals("entero") ? tipoN : "tipo_error";
+			N();
+			if (!tipoY.equals("entero"))
+				GestorErrores.addError("200", ALex.line, "Semántico"); // Se esperaba un entero
 		} else if (followN.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("38");
-			return "tipo_ok";
 		} else {
 			System.out.println("N");
 			GestorErrores.addError("100", ALex.line, "Sintático");
 		}
-		return "FALLO";
 	}
 
 	private static String Y() {
@@ -681,7 +724,12 @@ public class ASint {
 			Parse.add("39");
 			equipara("exclamacion");
 			String tipo = Y();
-			return tipo.equals("logico") ? "logico" : "tipo_error";
+			if (!tipo.equals("logico"))
+				GestorErrores.addError("200", ALex.line, "Semántico"); // Solo se puede usar negación con variables
+																		// lógicas. Tendriamos que darle tipo logico
+																		// para recuperarnos del error
+			else
+				return "logico";
 		} else if (firstU.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("40");
 			String tipo = U();
@@ -698,7 +746,11 @@ public class ASint {
 			Parse.add("41");
 			equipara("incrementador");
 			String tipo = U();
-			return tipo.equals("entero") ? "entero" : "tipo_error";
+			if (!tipo.equals("entero"))
+				GestorErrores.addError("200", ALex.line, "Semántico"); // Solo se puede usar autoincremento con
+																		// variables enteras
+			else
+				return "entero";
 		} else if (firstV.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("42");
 			String tipos[] = V();
@@ -710,7 +762,7 @@ public class ASint {
 		return "FALLO";
 	}
 
-	private static String[] V() {
+	private static String[] V() { // Tipo y ancho
 		String[] res = new String[2];// tipo-ancho
 		if (sigToken.getLeft().equals("id")) {
 			Parse.add("43");
@@ -720,12 +772,11 @@ public class ASint {
 
 			ArrayList<String> seta = Z();
 			if (entrada.getTipo().equals("function")) {
-				if (!entrada.getTipoParam().equals(seta)) {
-					res[0] = "tipo_error";
+				if (entrada.getTipoParam().equals(seta)) {
+					res[0] = entrada.getTipoDev();
 					res[1] = "FALLO";
 				} else {
-					res[0] = "tipo_ok";
-					res[1] = "FALLO";
+					GestorErrores.addError("200", ALex.line, "Semántico"); // Argumentos no coinciden
 				}
 			} else {
 				res[0] = entrada.getTipo();
