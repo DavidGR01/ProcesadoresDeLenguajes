@@ -9,7 +9,7 @@ public class Main {
 
 		ASint.execASint();
 
-		//ASint.LL1();
+//		System.out.println(ASint.LL1());
 
 		ALex.toFileGE();
 		//ALex.toFileTS();
@@ -18,12 +18,14 @@ public class Main {
 
 		ALex.closeFile();
 		
-
+		
+//		System.out.println(ASint.follow("F"));
+//
 //		for (String s : ASint.gram.keySet()) {
 //			System.out.println("First (" + s + ") " + ASint.first(s));
 //			System.out.println("Follow (" + s + ") " + ASint.follow(s));
 //		}
 
 	}
-
+	
 }

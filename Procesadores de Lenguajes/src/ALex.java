@@ -105,8 +105,7 @@ public class ALex {
 						if (ASint.zonaDecl) {
 							int p = TS.buscarTS(lexema);
 							if (p != -1) {
-								System.out.println("E1");
-								GestorErrores.addError("200", ALex.line, "Semántico"); // El id ya está declarado
+								GestorErrores.addError("209", ALex.line, "Semántico"); // El id ya está declarado
 							} else {
 								p = TS.insertarLexemaTS(new Entrada(lexema));
 								token = new Pair<String, String>("id", p + "");
@@ -116,10 +115,9 @@ public class ALex {
 							int p2 = ASint.TSG.buscarTS(lexema);
 
 							if (p1 == -1 && p2 == -1) {
-								System.out.println("E1");
-								GestorErrores.addError("200", ALex.line, "Semántico"); // El id no está declarado
-							}else {
-								if(p1 == -1)
+								GestorErrores.addError("210", ALex.line, "Semántico"); // El id no está declarado
+							} else {
+								if (p1 == -1)
 									token = new Pair<String, String>("id", p2 + "");
 								else
 									token = new Pair<String, String>("id", p1 + "");
