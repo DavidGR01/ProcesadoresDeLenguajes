@@ -1,12 +1,5 @@
-function number resta(number x, number y){
-	let number t;
-	return t;
+function number resta(number a number b) //Falta coma
+{
+	return a-b //Falta ;
 }
-let number y;
-let number po;
-let number f;
 
-function number suma(number x, number y){
-	let number t;
-	return t;
-}

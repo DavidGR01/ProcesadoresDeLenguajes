@@ -1,0 +1,3 @@
+Error Sintáctico: Se esperaba un abreCorchete. En la línea 6
+Error Léxico: No puede empezar identificador con _. En la línea 10
+Error Semántico: No coinciden los tipos en la asignación.. En la línea 10

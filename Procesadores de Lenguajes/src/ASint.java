@@ -18,8 +18,8 @@ public class ASint {
 	// First y follow
 	private static ArrayList<String> firstR, firstU, firstV, firstE, firstS, firstT, firstF, firstB, firstY;
 
-	private static ArrayList<String> followP, followC, followZ, followX, followL, followQ, followA, followK, followN,
-			followM, followH;
+	private static ArrayList<String> followP, followF, followC, followZ, followX, followL, followQ, followA, followK,
+			followN, followM, followH, followT;
 
 	// Tablas de Simbolos
 	public static TablaSimbolos TSG, TSL;
@@ -70,6 +70,7 @@ public class ASint {
 		firstY = first("Y");
 		followX = follow("X");
 		followP = follow("P");
+		followF = follow("F");
 		followC = follow("C");
 		followZ = follow("Z");
 		followL = follow("L");
@@ -79,6 +80,7 @@ public class ASint {
 		followK = follow("K");
 		followM = follow("M");
 		followN = follow("N");
+		followT = follow("T");
 
 		// {TSG = CrearTS, TSactual = TSG, DespG = 0, zonadec = true} P();
 		TSG = new TablaSimbolos();
@@ -161,7 +163,7 @@ public class ASint {
 			res.add("$");
 		for (Entry<String, ArrayList<ArrayList<String>>> regla : gram.entrySet()) {
 			for (ArrayList<String> prod : regla.getValue()) {
-				if (!regla.getKey().equals(prod.get(prod.size() - 1))) {
+				if (!(regla.getKey().equals(prod.get(prod.size() - 1)) && nt.equals(regla.getKey()))) {
 					if (prod.contains(nt)) {
 						int indice = prod.indexOf(nt);
 						if (indice == prod.size() - 1)
@@ -217,32 +219,14 @@ public class ASint {
 			S();
 			P();
 		} else {
-			System.out.println("P");
-			if (sigToken.getLeft().equals("number") || sigToken.getLeft().equals("boolean")
-					|| sigToken.getLeft().equals("string")) {
-				GestorErrores.addError("101", ALex.line, "Sintático");
-				// Al haber error, avanzamos hasta el siguiente ; para seguir analizando errores
+			GestorErrores.addError("100", ALex.line, "Sintáctico"); 
+			while (!sigToken.getLeft().equals("$")) {
 				try {
-					while (!sigToken.getLeft().equals("puntoYcoma"))
-						sigToken = ALex.execALex();
 					sigToken = ALex.execALex();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				P();
-			} else if (traducir(sigToken.getLeft()).equals("=")) {
-				GestorErrores.addError("102", ALex.line, "Sintático");
-				// Al haber error, avanzamos hasta el siguiente ; para seguir analizando errores
-				try {
-					while (!sigToken.getLeft().equals("puntoYcoma"))
-						sigToken = ALex.execALex();
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				P();
-			} else
-				GestorErrores.addError("100", ALex.line, "Sintático");
+			}
 		}
 	}
 
@@ -285,7 +269,22 @@ public class ASint {
 			DespL = 0;
 		} else {
 			System.out.println("F");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("101", ALex.line, "Sintático");
+			while (!followF.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (!sigToken.getLeft().equals("$")) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				C();
+			}
 		}
 	}
 
@@ -308,7 +307,14 @@ public class ASint {
 			tipoYAncho[1] = "128";
 		} else {
 			System.out.println("T");
-			GestorErrores.addError("105", ALex.line, "Sintático");
+			GestorErrores.addError("102", ALex.line, "Sintático");// El tipo de dato introducido no existe
+			while (!followT.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return tipoYAncho;
 	}
@@ -322,7 +328,14 @@ public class ASint {
 			return "void";
 		} else {
 			System.out.println("H");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("103", ALex.line, "Sintático"); // Fallo en el tipo de la funcion
+			while (!followT.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return "FALLO";
 	}
@@ -348,7 +361,15 @@ public class ASint {
 			Parse.add("12");
 		else {
 			System.out.println("A");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("104", ALex.line, "Sintático"); // Fallo en los argumentos de la funcion
+			while (!followA.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
 		}
 		return new ArrayList<String>();
 	}
@@ -371,8 +392,14 @@ public class ASint {
 			Parse.add("14");
 			return arr;
 		} else {
-			GestorErrores.addError("106", ALex.line, "Sintático");
-			A();
+			GestorErrores.addError("104", ALex.line, "Sintático");
+			while (!followK.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return new ArrayList<String>();
 	}
@@ -398,9 +425,9 @@ public class ASint {
 
 		} else if (firstS.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("16");
-			//zonaDecl = false;
+			// zonaDecl = false;
 			String[] ese = S();
-			//zonaDecl = true;
+			// zonaDecl = true;
 			String[] ce = C();
 
 			res[0] = ese[0].equals(ce[0]) && ce[0].equals(TIPO_OK) ? TIPO_OK : TIPO_ERROR;
@@ -420,25 +447,15 @@ public class ASint {
 			res[1] = "void";
 		} else {
 			System.out.println("C");
-
-			if (sigToken.getLeft().equals("number") || sigToken.getLeft().equals("boolean")
-					|| sigToken.getLeft().equals("string"))
-				GestorErrores.addError("101", ALex.line, "Sintático");
-			else if (sigToken.getLeft().equals("function")) {
-				GestorErrores.addError("113", ALex.line, "Sintático");
+			GestorErrores.addError("100", ALex.line, "Sintático"); // Error en la linea...
+			while (!followC.contains(traducir(sigToken.getLeft()))) {
 				try {
-					while (!sigToken.getLeft().equals("cierraCorchete")) // Asumimos que esta funcion esta bien.
-																			// Podriamos parar si quisieramos tambien
-						sigToken = ALex.execALex();
 					sigToken = ALex.execALex();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				C();
-			} else
-				GestorErrores.addError("100", ALex.line, "Sintático");
+			}
 		}
-
 		return res;
 	}
 
@@ -453,7 +470,7 @@ public class ASint {
 			String[] tiposS = S();
 
 			if (!tipoE.equals("logico")) {
-				GestorErrores.addError("200", ALex.line, "Semántico"); // Condicion debe ser boolean
+				GestorErrores.addError("201", ALex.line, "Semántico"); // Condicion debe ser boolean
 				// tipoE = "logico"; // Recuperacion de errores
 			}
 			res[0] = tipoE == "logico" && tiposS[0] == TIPO_OK ? TIPO_OK : TIPO_ERROR; // No se va a dar el tipo_error
@@ -469,7 +486,7 @@ public class ASint {
 			equipara("cierraCorchete");
 
 			if (!tipoE.equals("logico")) {
-				GestorErrores.addError("200", ALex.line, "Semántico"); // Condicion debe ser boolean
+				GestorErrores.addError("201", ALex.line, "Semántico"); // Condicion debe ser boolean
 				// tipoE = "logico"; // Recuperacion de errores
 			}
 			res[0] = tipoE == "logico" && tiposC[0] == TIPO_OK ? TIPO_OK : TIPO_ERROR; // No se va a dar el tipo_error
@@ -497,6 +514,13 @@ public class ASint {
 		} else {
 			System.out.println("B");
 			GestorErrores.addError("100", ALex.line, "Sintático");
+			while (!follow("B").contains(traducir(sigToken.getLeft()))) { // Error en la linea ...
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return res;
 	}
@@ -512,10 +536,9 @@ public class ASint {
 			Object[] uvedoble = W();
 
 			Entrada entrada = TSActual.buscarPos(pos);
-//			if (entrada.getTipo() != null) {
 			if (entrada.getTipo().equals("function")) {
 				if (!entrada.getTipoParam().equals((ArrayList<String>) uvedoble[1])) {
-					GestorErrores.addError("200", ALex.line, "Semántico"); // Argumentos no coinciden. Deberian ser
+					GestorErrores.addError("202", ALex.line, "Semántico"); // Argumentos no coinciden. Deberian ser
 																			// entero, string y son string, string
 				} else {
 					res[0] = TIPO_OK;
@@ -526,14 +549,10 @@ public class ASint {
 					res[0] = (String) uvedoble[0];
 					res[1] = "void";
 				} else {
-					GestorErrores.addError("200", ALex.line, "Semántico"); // No coinciden los tipos en la asignacion.
+					GestorErrores.addError("208", ALex.line, "Semántico"); // No coinciden los tipos en la asignacion.
 																			// Deberian ser...
 				}
 			}
-//			} else {
-//				res[0] = TIPO_ERROR;
-//				res[1] = "WTF";
-//			}
 		} else if (sigToken.getLeft().equals("alert")) {
 			Parse.add("22");
 			equipara("alert");
@@ -544,7 +563,7 @@ public class ASint {
 			if (tipo.equals("cadena") || tipo.equals("entero"))
 				res[0] = TIPO_OK;
 			else
-				GestorErrores.addError("200", ALex.line, "Semántico"); // Alert solo puede tener argumentos tipo entero
+				GestorErrores.addError("203", ALex.line, "Semántico"); // Alert solo puede tener argumentos tipo entero
 																		// o cadena
 			res[1] = "void";
 		} else if (sigToken.getLeft().equals("input")) {
@@ -559,7 +578,7 @@ public class ASint {
 			if (tipo.equals("cadena") || tipo.equals("entero"))
 				res[0] = TIPO_OK;
 			else
-				GestorErrores.addError("200", ALex.line, "Semántico"); // Input solo puede tener argumentos tipo entero
+				GestorErrores.addError("204", ALex.line, "Semántico"); // Input solo puede tener argumentos tipo entero
 																		// o cadena
 			res[1] = "void";
 		} else if (sigToken.getLeft().equals("return")) {
@@ -571,7 +590,14 @@ public class ASint {
 			res[1] = tipo;
 		} else {
 			System.out.println("S");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("105", ALex.line, "Sintático");
+			while (!follow("S").contains(traducir(sigToken.getLeft()))) { // Error en la linea...
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return res;
 	}
@@ -595,15 +621,14 @@ public class ASint {
 			res[1] = tiposArgs;
 		} else {
 			System.out.println("W");
-			GestorErrores.addError("107", ALex.line, "Sintático");
-			try {
-				while (!sigToken.getLeft().equals("puntoYcoma"))
+			GestorErrores.addError("106", ALex.line, "Sintático");
+			while (!follow("W").contains(traducir(sigToken.getLeft()))) {
+				try {
 					sigToken = ALex.execALex();
-				sigToken = ALex.execALex();
-			} catch (IOException e) {
-				e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-			P();
 		}
 		return res;
 	}
@@ -621,7 +646,14 @@ public class ASint {
 			Parse.add("28");
 		else {
 			System.out.println("L");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("107", ALex.line, "Sintático"); // Fallo en la llamada a la función
+			while (!followL.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return res;
 	}
@@ -638,7 +670,14 @@ public class ASint {
 			return arr;
 		} else {
 			System.out.println("Q");
-			GestorErrores.addError("106", ALex.line, "Sintático");
+			GestorErrores.addError("108", ALex.line, "Sintático");
+			while (!followQ.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return new ArrayList<String>();
 	}
@@ -653,7 +692,14 @@ public class ASint {
 			return "void";
 		} else {
 			System.out.println("X");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("109", ALex.line, "Sintático"); // Fallo en el return
+			while (!followX.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return "Fallo";
 	}
@@ -666,7 +712,14 @@ public class ASint {
 			return tipoM.equals("logico") ? "logico" : tipoR;
 		} else {
 			System.out.println("E");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresión
+			while (!follow("E").contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return "FALLO";
 	}
@@ -678,14 +731,21 @@ public class ASint {
 			String tipoR = R();
 			M();
 			if (!tipoR.equals("entero"))
-				GestorErrores.addError("200", ALex.line, "Semántico"); // Se esperaba un entero
+				GestorErrores.addError("205", ALex.line, "Semántico"); // Se esperaba un entero
 			else
 				return "logico";
 		} else if (followM.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("35");
 		} else {
 			System.out.println("M");
-			GestorErrores.addError("108", ALex.line, "Sintático");
+			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
+			while (!followM.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return "FALLO";
 	}
@@ -698,7 +758,14 @@ public class ASint {
 			return tipoY;
 		} else {
 			System.out.println("R");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
+			while (!follow("R").contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return "FALLO";
 	}
@@ -710,12 +777,19 @@ public class ASint {
 			String tipoY = Y();
 			N();
 			if (!tipoY.equals("entero"))
-				GestorErrores.addError("200", ALex.line, "Semántico"); // Se esperaba un entero
+				GestorErrores.addError("205", ALex.line, "Semántico"); // Se esperaba un entero
 		} else if (followN.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("38");
 		} else {
 			System.out.println("N");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
+			while (!followN.contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -725,7 +799,7 @@ public class ASint {
 			equipara("exclamacion");
 			String tipo = Y();
 			if (!tipo.equals("logico"))
-				GestorErrores.addError("200", ALex.line, "Semántico"); // Solo se puede usar negación con variables
+				GestorErrores.addError("206", ALex.line, "Semántico"); // Solo se puede usar negación con variables
 																		// lógicas. Tendriamos que darle tipo logico
 																		// para recuperarnos del error
 			else
@@ -736,7 +810,14 @@ public class ASint {
 			return tipo;
 		} else {
 			System.out.println("Y");
-			GestorErrores.addError("108", ALex.line, "Sintático");
+			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
+			while (!follow("Y").contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return "FALLO";
 	}
@@ -747,7 +828,7 @@ public class ASint {
 			equipara("incrementador");
 			String tipo = U();
 			if (!tipo.equals("entero"))
-				GestorErrores.addError("200", ALex.line, "Semántico"); // Solo se puede usar autoincremento con
+				GestorErrores.addError("207", ALex.line, "Semántico"); // Solo se puede usar autoincremento con
 																		// variables enteras
 			else
 				return "entero";
@@ -757,7 +838,14 @@ public class ASint {
 			return tipos[0];
 		} else {
 			System.out.println("U");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
+			while (!follow("U").contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return "FALLO";
 	}
@@ -776,7 +864,7 @@ public class ASint {
 					res[0] = entrada.getTipoDev();
 					res[1] = "FALLO";
 				} else {
-					GestorErrores.addError("200", ALex.line, "Semántico"); // Argumentos no coinciden
+					GestorErrores.addError("202", ALex.line, "Semántico"); // Argumentos no coinciden
 				}
 			} else {
 				res[0] = entrada.getTipo();
@@ -806,7 +894,14 @@ public class ASint {
 			res[1] = "2";
 		} else {
 			System.out.println("V");
-			GestorErrores.addError("100", ALex.line, "Sintático");
+			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
+			while (!follow("V").contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return res;
 	}
@@ -821,12 +916,20 @@ public class ASint {
 			Parse.add("49");
 		else {
 			System.out.println("Z");
-			GestorErrores.addError("104", ALex.line, "Sintático");
+			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
+			while (!follow("Z").contains(traducir(sigToken.getLeft()))) {
+				try {
+					sigToken = ALex.execALex();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return new ArrayList<>();
 	}
 
-	private static void equipara(String t) {
+	private static void equipara(String t) { // Suponemos para la recuperacion de errores que falta aquello con lo que
+												// se equipara
 		if (sigToken.getLeft().equals(t)) {
 			try {
 				sigToken = ALex.execALex();
@@ -834,18 +937,7 @@ public class ASint {
 				e.printStackTrace();
 			}
 		} else {
-			if (t.equals("id"))
-				GestorErrores.addError("110", ALex.line, "Sintactico");
-			if (t.equals("abreParentesis"))
-				GestorErrores.addError("104", ALex.line, "Sintactico");
-			if (t.equals("cierraParentesis"))
-				GestorErrores.addError("111", ALex.line, "Sintactico");
-			if (t.equals("abreCorchete"))
-				GestorErrores.addError("103", ALex.line, "Sintactico");
-			if (t.equals("cierraCorchete"))
-				GestorErrores.addError("110", ALex.line, "Sintactico");
-			if (t.equals("puntoYcoma"))
-				GestorErrores.addError("112", ALex.line, "Sintactico");
+			GestorErrores.addError2(t, ALex.line, "Sintáctico");
 		}
 	}
 
