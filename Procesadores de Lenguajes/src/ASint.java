@@ -88,7 +88,7 @@ public class ASint {
 		DespG = 0;
 		zonaDecl = true;
 
-		ALex alex = new ALex();
+		ALex.inicializar();
 		sigToken = ALex.execALex();
 
 		P();
@@ -221,11 +221,7 @@ public class ASint {
 		} else {
 			GestorErrores.addError("100", ALex.line, "Sintáctico"); 
 			while (!sigToken.getLeft().equals("$")) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 	}
@@ -271,18 +267,10 @@ public class ASint {
 			System.out.println("F");
 			GestorErrores.addError("101", ALex.line, "Sintático");
 			while (!followF.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 			if (!sigToken.getLeft().equals("$")) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 				C();
 			}
 		}
@@ -309,11 +297,7 @@ public class ASint {
 			System.out.println("T");
 			GestorErrores.addError("102", ALex.line, "Sintático");// El tipo de dato introducido no existe
 			while (!followT.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return tipoYAncho;
@@ -330,11 +314,7 @@ public class ASint {
 			System.out.println("H");
 			GestorErrores.addError("103", ALex.line, "Sintático"); // Fallo en el tipo de la funcion
 			while (!followT.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return "FALLO";
@@ -363,11 +343,7 @@ public class ASint {
 			System.out.println("A");
 			GestorErrores.addError("104", ALex.line, "Sintático"); // Fallo en los argumentos de la funcion
 			while (!followA.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 			
 		}
@@ -394,11 +370,7 @@ public class ASint {
 		} else {
 			GestorErrores.addError("104", ALex.line, "Sintático");
 			while (!followK.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return new ArrayList<String>();
@@ -449,11 +421,7 @@ public class ASint {
 			System.out.println("C");
 			GestorErrores.addError("100", ALex.line, "Sintático"); // Error en la linea...
 			while (!followC.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return res;
@@ -515,11 +483,7 @@ public class ASint {
 			System.out.println("B");
 			GestorErrores.addError("100", ALex.line, "Sintático");
 			while (!follow("B").contains(traducir(sigToken.getLeft()))) { // Error en la linea ...
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return res;
@@ -592,11 +556,7 @@ public class ASint {
 			System.out.println("S");
 			GestorErrores.addError("105", ALex.line, "Sintático");
 			while (!follow("S").contains(traducir(sigToken.getLeft()))) { // Error en la linea...
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return res;
@@ -623,11 +583,7 @@ public class ASint {
 			System.out.println("W");
 			GestorErrores.addError("106", ALex.line, "Sintático");
 			while (!follow("W").contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return res;
@@ -648,11 +604,7 @@ public class ASint {
 			System.out.println("L");
 			GestorErrores.addError("107", ALex.line, "Sintático"); // Fallo en la llamada a la función
 			while (!followL.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return res;
@@ -672,11 +624,7 @@ public class ASint {
 			System.out.println("Q");
 			GestorErrores.addError("108", ALex.line, "Sintático");
 			while (!followQ.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return new ArrayList<String>();
@@ -694,11 +642,7 @@ public class ASint {
 			System.out.println("X");
 			GestorErrores.addError("109", ALex.line, "Sintático"); // Fallo en el return
 			while (!followX.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return "Fallo";
@@ -714,11 +658,7 @@ public class ASint {
 			System.out.println("E");
 			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresión
 			while (!follow("E").contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return "FALLO";
@@ -740,11 +680,7 @@ public class ASint {
 			System.out.println("M");
 			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
 			while (!followM.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return "FALLO";
@@ -760,11 +696,7 @@ public class ASint {
 			System.out.println("R");
 			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
 			while (!follow("R").contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return "FALLO";
@@ -784,11 +716,7 @@ public class ASint {
 			System.out.println("N");
 			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
 			while (!followN.contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 	}
@@ -812,11 +740,7 @@ public class ASint {
 			System.out.println("Y");
 			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
 			while (!follow("Y").contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return "FALLO";
@@ -840,11 +764,7 @@ public class ASint {
 			System.out.println("U");
 			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
 			while (!follow("U").contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return "FALLO";
@@ -896,11 +816,7 @@ public class ASint {
 			System.out.println("V");
 			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
 			while (!follow("V").contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return res;
@@ -918,11 +834,7 @@ public class ASint {
 			System.out.println("Z");
 			GestorErrores.addError("110", ALex.line, "Sintático"); // Fallo en la expresion
 			while (!follow("Z").contains(traducir(sigToken.getLeft()))) {
-				try {
-					sigToken = ALex.execALex();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				sigToken = ALex.execALex();
 			}
 		}
 		return new ArrayList<>();
@@ -931,11 +843,7 @@ public class ASint {
 	private static void equipara(String t) { // Suponemos para la recuperacion de errores que falta aquello con lo que
 												// se equipara
 		if (sigToken.getLeft().equals(t)) {
-			try {
-				sigToken = ALex.execALex();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			sigToken = ALex.execALex();
 		} else {
 			GestorErrores.addError2(t, ALex.line, "Sintáctico");
 		}
