@@ -1,0 +1,7 @@
+TABLA #03:
+*'n'
++Tipo:'entero'
++Despl:'0'
+*'factorial'
++Tipo:'entero'
++Despl:'2'

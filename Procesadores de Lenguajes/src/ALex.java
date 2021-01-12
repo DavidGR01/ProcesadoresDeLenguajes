@@ -49,7 +49,8 @@ public class ALex {
 		do {
 			// EOF
 			if (car == -1)
-				return new Pair<String, String>("$", "");
+				return new Pair<String, String>("$", ""); // si no hay una linea al final del fichero se fuma el ultimo
+															// token
 
 			if (car == 10)
 				line++;
@@ -109,7 +110,8 @@ public class ALex {
 						if (ASint.zonaDecl) {
 							int p = TS.buscarTS(lexema);
 							if (p != -1) {
-								GestorErrores.addError("209", ALex.line, "Semántico"); // El id ya está declarado
+								GestorErrores.addError3("El identificador '" + lexema + "' ya está declarado", ALex.line,
+										"Semántico", true); // El id ya está declarado
 							} else {
 								p = TS.insertarLexemaTS(new Entrada(lexema));
 								token = new Pair<String, String>("id", p + "");
@@ -119,7 +121,9 @@ public class ALex {
 							int p2 = ASint.TSG.buscarTS(lexema);
 
 							if (p1 == -1 && p2 == -1) {
-								GestorErrores.addError("210", ALex.line, "Semántico"); // El id no está declarado
+								GestorErrores.addError3(
+										"El identificador '" + lexema + "' no se ha declarado previamente", ALex.line,
+										"Semántico", true); // El id no está declarado
 							} else {
 								if (p1 == -1)
 									token = new Pair<String, String>("id", p2 + "");
@@ -196,10 +200,6 @@ public class ALex {
 
 	public static void toFileTS() throws IOException {
 		TS.toFile();
-	}
-
-	public static void toFileGE() throws IOException {
-		GestorErrores.toFile();
 	}
 
 	private static int leer() {

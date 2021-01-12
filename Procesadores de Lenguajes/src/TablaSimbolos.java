@@ -29,6 +29,8 @@ public class TablaSimbolos {
 	}
 
 	public Entrada buscarPos(int pos) {
+		if(pos>=TS.size())
+			return null;
 		return TS.get(pos);
 	}
 

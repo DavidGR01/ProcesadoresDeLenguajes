@@ -2,21 +2,16 @@ import java.io.IOException;
 
 public class Main {
 
-	public static void main(String[] args) throws IOException {
-
-		Tokens.clearFile();
-		TablaSimbolos.clearFile();
+	public static void main(String[] args) throws IOException  {
 
 		ASint.execASint();
 
 //		System.out.println(ASint.LL1());
 
-		ALex.toFileGE();
-		//ALex.toFileTS();
-
+		GestorErrores.toFile();
 		Parse.toFile();
 
-		ALex.closeFile();
+		
 		
 		
 //		System.out.println(ASint.follow("F"));
