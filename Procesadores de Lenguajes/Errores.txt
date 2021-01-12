@@ -1,1 +1,0 @@
-Error Semántico: El identificador 'num' no se ha declarado previamente. En la línea 34
