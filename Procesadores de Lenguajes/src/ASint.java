@@ -427,6 +427,8 @@ public class ASint {
 			res[0] = TIPO_OK;
 			res[1] = "void";
 		} else {
+			res[0] = "";
+			res[1] = "";
 			System.out.println("C");
 			if (sigToken.getLeft().equals("function"))
 				GestorErrores.addError("113", ALex.line, SINTACTICO, true);
@@ -512,7 +514,9 @@ public class ASint {
 			Object[] uvedoble = W();
 
 			Entrada entrada = TSActual.buscarPos(pos);
-			if (entrada.getTipo() != null && entrada.getTipo().equals("function")) {
+			if(entrada == null)
+				entrada = TSG.buscarPos(pos);
+			if (entrada.getTipo().equals("function")) {
 				if (!entrada.getTipoParam().equals((ArrayList<String>) uvedoble[1])) {
 					GestorErrores.addError("202", lineaTemp, SEMANTICO, true); // Argumentos no coinciden. Deberian
 																				// ser entero, string y son string,
@@ -577,6 +581,8 @@ public class ASint {
 			res[0] = TIPO_OK;
 			res[1] = tipo;
 		} else {
+			res[0] = "";
+			res[1] = "";
 			System.out.println("S");
 			GestorErrores.addError("105", ALex.line, SINTACTICO);
 			while (!follow("S").contains(traducir(sigToken.getLeft()))) { // Error en la linea...
@@ -802,6 +808,8 @@ public class ASint {
 			int pos = Integer.parseInt(sigToken.getRight());
 			equipara("id");
 			Entrada entrada = TSActual.buscarPos(pos);
+			if(entrada == null)
+				entrada = TSG.buscarPos(pos);
 
 			ArrayList<String> seta = Z();
 			if (entrada.getTipo().equals("function")) {
@@ -851,8 +859,10 @@ public class ASint {
 		if (sigToken.getLeft().equals("abreParentesis")) {
 			Parse.add("48");
 			equipara("abreParentesis");
+			ArrayList<String> res =  L();
 			equipara("cierraParentesis");
-			return L();
+			return res;
+			
 		} else if (followZ.contains(traducir(sigToken.getLeft())))
 			Parse.add("49");
 		else {
