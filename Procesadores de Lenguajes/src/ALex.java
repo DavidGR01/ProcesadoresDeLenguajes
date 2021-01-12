@@ -17,7 +17,7 @@ public class ALex {
 	static TablaSimbolos TS;
 	public static int line = 1; // Variables para llevar la cuenta de la linea en la que estamos
 
-	public ALex() throws IOException {
+	public static void inicializar() {
 		rellenarMatriz();
 		rellenarPR();
 
@@ -25,12 +25,16 @@ public class ALex {
 		TS = ASint.TSActual;
 		GestorErrores.rellenarMap();
 		File f = new File("input.txt"); // Cambiar a leer por argumentos
-		fr = new FileReader(f);
+		try {
+			fr = new FileReader(f);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		br = new BufferedReader(fr);
-		car = br.read();
+		car = leer();
 	}
 
-	public static Pair<String, String> execALex() throws IOException {
+	public static Pair<String, String> execALex() {
 
 		TS = ASint.TSActual;
 
@@ -45,7 +49,8 @@ public class ALex {
 		do {
 			// EOF
 			if (car == -1)
-				return new Pair<String, String>("$", "");
+				return new Pair<String, String>("$", ""); // si no hay una linea al final del fichero se fuma el ultimo
+															// token
 
 			if (car == 10)
 				line++;
@@ -56,26 +61,26 @@ public class ALex {
 			if (estado == -2) {
 				GestorErrores.addError(accion, line, "Léxico");
 				// Seguimos leyendo el fichero desde el siguiente caracter al erroneo
-				car = br.read();
+				car = leer();
 				estado = 0;
 			} else {
 				switch (accion) {
 				case "A":
-					car = br.read();
+					car = leer();
 					break;
 				case "B":
 					lexema = "";
 					if (car != 39)
 						lexema += (char) car;
-					car = br.read();
+					car = leer();
 					break;
 				case "C":
 					valor = Character.getNumericValue((char) car);
-					car = br.read();
+					car = leer();
 					break;
 				case "D":
 					valor = valor * 10 + Character.getNumericValue((char) car);
-					car = br.read();
+					car = leer();
 					break;
 				case "E":
 					// Revisar rango
@@ -89,11 +94,11 @@ public class ALex {
 					break;
 				case "F":
 					token = new Pair<String, String>("incrementador", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "G":
 					lexema += (char) car;
-					car = br.read();
+					car = leer();
 					break;
 				case "H":
 					if (buscarPR(lexema)) {
@@ -105,7 +110,8 @@ public class ALex {
 						if (ASint.zonaDecl) {
 							int p = TS.buscarTS(lexema);
 							if (p != -1) {
-								GestorErrores.addError("209", ALex.line, "Semántico"); // El id ya está declarado
+								GestorErrores.addError3("El identificador '" + lexema + "' ya está declarado", ALex.line,
+										"Semántico", true); // El id ya está declarado
 							} else {
 								p = TS.insertarLexemaTS(new Entrada(lexema));
 								token = new Pair<String, String>("id", p + "");
@@ -115,7 +121,9 @@ public class ALex {
 							int p2 = ASint.TSG.buscarTS(lexema);
 
 							if (p1 == -1 && p2 == -1) {
-								GestorErrores.addError("210", ALex.line, "Semántico"); // El id no está declarado
+								GestorErrores.addError3(
+										"El identificador '" + lexema + "' no se ha declarado previamente", ALex.line,
+										"Semántico", true); // El id no está declarado
 							} else {
 								if (p1 == -1)
 									token = new Pair<String, String>("id", p2 + "");
@@ -132,49 +140,49 @@ public class ALex {
 						estado = 0;
 					} else {
 						token = new Pair<String, String>("cadena", "\"" + lexema + "\"");
-						car = br.read();
+						car = leer();
 						return Tokens.toFile(token);
 					}
-					car = br.read();
+					car = leer();
 				case "J":
 					token = new Pair<String, String>("abreParentesis", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "K":
 					token = new Pair<String, String>("cierraParentesis", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "L":
 					token = new Pair<String, String>("abreCorchete", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "M":
 					token = new Pair<String, String>("cierraCorchete", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "N":
 					token = new Pair<String, String>("menos", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "Ñ":
 					token = new Pair<String, String>("menorEstricto", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "O":
 					token = new Pair<String, String>("exclamacion", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "P":
 					token = new Pair<String, String>("puntoYcoma", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "Q":
 					token = new Pair<String, String>("igual", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "R":
 					token = new Pair<String, String>("coma", "");
-					car = br.read();
+					car = leer();
 					return Tokens.toFile(token);
 				case "S":
 					break;
@@ -194,8 +202,14 @@ public class ALex {
 		TS.toFile();
 	}
 
-	public static void toFileGE() throws IOException {
-		GestorErrores.toFile();
+	private static int leer() {
+		Integer res = null;
+		try {
+			res = br.read();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return res;
 	}
 
 	private static void rellenarMatriz() {

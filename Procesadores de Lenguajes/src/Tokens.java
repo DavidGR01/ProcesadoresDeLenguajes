@@ -3,16 +3,26 @@ import java.io.IOException;
 
 public class Tokens {
 
-	public static Pair<String, String> toFile(Pair<String, String> token) throws IOException {
-		FileWriter myWriter = new FileWriter("tokens.txt", true);
-		myWriter.write("<" + token.getLeft() + "," + token.getRight() + ">\n");
-		myWriter.close();
+	public static Pair<String, String> toFile(Pair<String, String> token) {
+		FileWriter myWriter;
+		try {
+			myWriter = new FileWriter("tokens.txt", true);
+			myWriter.write("<" + token.getLeft() + "," + token.getRight() + ">\n");
+			myWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return token;
 	}
 
-	public static void clearFile() throws IOException {
-		FileWriter myWriter = new FileWriter("tokens.txt");
-		myWriter.write("");
-		myWriter.close();
+	public static void clearFile() {
+		FileWriter myWriter;
+		try {
+			myWriter = new FileWriter("tokens.txt");
+			myWriter.write("");
+			myWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
