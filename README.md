@@ -1,3 +1,3 @@
 # Procesadores-de-Lenguajes
 
-[Web de la asginatura](https://dlsiisv.fi.upm.es/procesadores/Practica.html)
+[Web de la asignatura](https://dlsiisv.fi.upm.es/procesadores/Practica.html)
