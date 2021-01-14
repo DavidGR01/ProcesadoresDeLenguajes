@@ -1,0 +1,8 @@
+
+function number cadena (boolean log)
+{
+    if (!log) return s;
+    
+}    
+
+let number s;
