@@ -34,8 +34,7 @@ public class ASint {
 	// Variable auxiliar para guardar bien la linea del ultimo fallo
 	private static int ultimaLineaFallo = -1;
 
-	public static void execASint() throws IOException {
-
+	public static void cargarGramatica() {
 		rellenarGramatica("P", "B", "P", "|", "F", "P", "|", "lambda", "|", "S", "P");
 		rellenarGramatica("F", "function", "H", "id", "(", "A", ")", "{", "C", "}");
 		rellenarGramatica("T", "number", "|", "boolean", "|", "string");
@@ -61,6 +60,11 @@ public class ASint {
 		rellenarGramatica("Z", "(", "L", ")", "|", "lambda");
 
 		rellenarTerminalesYNoTerminales();
+	}
+
+	public static void execASint(String file) throws IOException {
+
+		cargarGramatica();
 
 		// Axioma
 		firstB = first("B");
@@ -95,7 +99,7 @@ public class ASint {
 		TSActual = TSG;
 		DespG = 0;
 
-		ALex.inicializar();
+		ALex.inicializar(file);
 		sigToken = ALex.execALex();
 
 		P();
@@ -228,13 +232,13 @@ public class ASint {
 			P();
 		} else {
 			GestorErrores.addError("100", ALex.line, SINTACTICO);
-			while (!sigToken.getLeft().equals("$")) {
+			while (!sigToken.getLeft().equals("$")) 
 				avanzarYParar();
-			}
 		}
 	}
 
 	private static void F() {
+		int lineaTemp = ALex.line;
 		if (sigToken.getLeft().equals("function")) {
 			Parse.add("5");
 			zonaDecl = true;
@@ -264,7 +268,7 @@ public class ASint {
 			equipara("cierraCorchete");
 
 			if (!tipos[1].equals(tipoDev))
-				GestorErrores.addError("200", ALex.line, SEMANTICO, true); // Tipo Retorno Incorrecto
+				GestorErrores.addError("200", lineaTemp, SEMANTICO, true); // Tipo Retorno Incorrecto
 
 			// Destruye TSL
 			TSActual.toFile();
@@ -273,7 +277,7 @@ public class ASint {
 			DespL = 0;
 		} else {
 			System.out.println("F");
-			GestorErrores.addError("101", ALex.line, SINTACTICO);
+			GestorErrores.addError("101", lineaTemp, SINTACTICO);
 			while (!followF.contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
 			}
@@ -451,10 +455,8 @@ public class ASint {
 			equipara("cierraParentesis");
 			String[] tiposS = S();
 
-			if (!tipoE.equals("logico")) {
+			if (!tipoE.equals("logico")) 
 				GestorErrores.addError("201", ALex.line, SEMANTICO, true); // Condicion debe ser boolean
-				// tipoE = "logico"; // Recuperacion de errores
-			}
 			res[0] = tipoE == "logico" && tiposS[0] == TIPO_OK ? TIPO_OK : TIPO_ERROR; // No se va a dar el tipo_error
 			res[1] = tiposS[1];
 		} else if (sigToken.getLeft().equals("while")) {
@@ -467,10 +469,8 @@ public class ASint {
 			String[] tiposC = C();
 			equipara("cierraCorchete");
 
-			if (!tipoE.equals("logico")) {
+			if (!tipoE.equals("logico")) 
 				GestorErrores.addError("201", ALex.line, SEMANTICO, true); // Condicion debe ser boolean
-				// tipoE = "logico"; // Recuperacion de errores
-			}
 			res[0] = tipoE == "logico" && tiposC[0] == TIPO_OK ? TIPO_OK : TIPO_ERROR; // No se va a dar el tipo_error
 			res[1] = tiposC[1];
 		} else if (sigToken.getLeft().equals("let")) {
@@ -514,7 +514,7 @@ public class ASint {
 			Object[] uvedoble = W();
 
 			Entrada entrada = TSActual.buscarPos(pos);
-			if(entrada == null)
+			if (entrada == null)
 				entrada = TSG.buscarPos(pos);
 			if (entrada.getTipo().equals("function")) {
 				if (!entrada.getTipoParam().equals((ArrayList<String>) uvedoble[1])) {
@@ -802,15 +802,17 @@ public class ASint {
 	}
 
 	private static String[] V() { // Tipo y ancho
-		String[] res = new String[2];// tipo-ancho
+		String[] res = new String[2];
 		if (sigToken.getLeft().equals("id")) {
 			Parse.add("43");
 			int pos = Integer.parseInt(sigToken.getRight());
 			equipara("id");
 			Entrada entrada = TSActual.buscarPos(pos);
-			if(entrada == null)
+			if (entrada == null)
 				entrada = TSG.buscarPos(pos);
-
+			if(!entrada.getLexema().equals(ALex.ultLexema))
+				entrada = TSG.buscarPos(pos);
+			
 			ArrayList<String> seta = Z();
 			if (entrada.getTipo().equals("function")) {
 				if (entrada.getTipoParam().equals(seta)) {
@@ -859,10 +861,9 @@ public class ASint {
 		if (sigToken.getLeft().equals("abreParentesis")) {
 			Parse.add("48");
 			equipara("abreParentesis");
-			ArrayList<String> res =  L();
+			ArrayList<String> res = L();
 			equipara("cierraParentesis");
 			return res;
-			
 		} else if (followZ.contains(traducir(sigToken.getLeft())))
 			Parse.add("49");
 		else {
@@ -995,7 +996,7 @@ public class ASint {
 
 	// Funcion para validar la gramatica
 	public static boolean LL1() {
-		boolean res = true;
+		boolean res = false;
 		ArrayList<String> masDeDosProds = new ArrayList<>();
 
 		// Sacamos las reglas con mas de dos producciones

@@ -17,14 +17,17 @@ public class ALex {
 	static TablaSimbolos TS;
 	public static int line = 1; // Variables para llevar la cuenta de la linea en la que estamos
 
-	public static void inicializar() {
+	// Variable auxiliar para los identificadores
+	public static String ultLexema = "";
+
+	public static void inicializar(String file) {
 		rellenarMatriz();
 		rellenarPR();
 
 		// Vamos leyendo el archivo
 		TS = ASint.TSActual;
 		GestorErrores.rellenarMap();
-		File f = new File("input.txt"); // Cambiar a leer por argumentos
+		File f = new File(file);
 		try {
 			fr = new FileReader(f);
 		} catch (FileNotFoundException e) {
@@ -37,11 +40,9 @@ public class ALex {
 	public static Pair<String, String> execALex() {
 
 		TS = ASint.TSActual;
-
 		int estado = 0;
 		int col = 0;
 		String accion = null;
-
 		String lexema = null;
 		int valor = 0;
 		Pair<String, String> token = null;
@@ -49,8 +50,7 @@ public class ALex {
 		do {
 			// EOF
 			if (car == -1)
-				return new Pair<String, String>("$", ""); // si no hay una linea al final del fichero se fuma el ultimo
-															// token
+				return new Pair<String, String>("$", "");
 
 			if (car == 10)
 				line++;
@@ -61,8 +61,11 @@ public class ALex {
 			if (estado == -2) {
 				GestorErrores.addError(accion, line, "Léxico");
 				// Seguimos leyendo el fichero desde el siguiente caracter al erroneo
-				car = leer();
-				estado = 0;
+				if (accion.equals("51") || accion.equals("57")) {
+					car = leer();
+					estado = 0;
+				} else
+					GestorErrores.salidaPrematura();
 			} else {
 				switch (accion) {
 				case "A":
@@ -86,7 +89,10 @@ public class ALex {
 					// Revisar rango
 					if (valor > 32767) {
 						GestorErrores.addError("56", line, "Léxico");
-						estado = 0;
+						token = new Pair<String, String>("entero", "0"); // Nos recuperamos del error devolviendo el
+																			// token
+																			// como se esperaba pero con el valor por
+																			// defecto
 					} else {
 						token = new Pair<String, String>("entero", valor + "");
 						return Tokens.toFile(token);
@@ -110,11 +116,12 @@ public class ALex {
 						if (ASint.zonaDecl) {
 							int p = TS.buscarTS(lexema);
 							if (p != -1) {
-								GestorErrores.addError3("El identificador '" + lexema + "' ya está declarado", ALex.line,
-										"Semántico", true); // El id ya está declarado
+								GestorErrores.addError3("El identificador '" + lexema + "' ya está declarado",
+										ALex.line, "Semántico", true); // El id ya está declarado
 							} else {
 								p = TS.insertarLexemaTS(new Entrada(lexema));
 								token = new Pair<String, String>("id", p + "");
+								ultLexema = lexema;
 							}
 						} else {
 							int p1 = ASint.TSActual.buscarTS(lexema);
@@ -125,25 +132,27 @@ public class ALex {
 										"El identificador '" + lexema + "' no se ha declarado previamente", ALex.line,
 										"Semántico", true); // El id no está declarado
 							} else {
-								if (p1 == -1)
+								if (p1 == -1) {
 									token = new Pair<String, String>("id", p2 + "");
-								else
+									ultLexema = lexema;
+								} else {
 									token = new Pair<String, String>("id", p1 + "");
+									ultLexema = lexema;
+								}
 							}
 						}
 					}
 					return Tokens.toFile(token);
 				case "I":
-					// Revisar Cadena
 					if (lexema.length() > 64) {
 						GestorErrores.addError("55", line, "Léxico");
-						estado = 0;
-					} else {
+						token = new Pair<String, String>("cadena", "\"\""); // Nos recuperamos del error devolviendo el
+																			// token como se esperaba pero con el valor
+																			// por defecto
+					} else
 						token = new Pair<String, String>("cadena", "\"" + lexema + "\"");
-						car = leer();
-						return Tokens.toFile(token);
-					}
 					car = leer();
+					return Tokens.toFile(token);
 				case "J":
 					token = new Pair<String, String>("abreParentesis", "");
 					car = leer();

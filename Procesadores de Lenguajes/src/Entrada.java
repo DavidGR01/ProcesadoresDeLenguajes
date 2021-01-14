@@ -1,4 +1,3 @@
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -6,7 +5,6 @@ public class Entrada {
 
 	private String lexema, tipo, desplazamiento, tipoDev, etiq;
 	private int numParam;
-	private List<String> nombres;
 	private List<Pair<String, String>> toPrint = new ArrayList<>();
 	private ArrayList<String> tipoParam = new ArrayList<>();
 
@@ -56,7 +54,7 @@ public class Entrada {
 
 	public void addTipoParam(String tipoParam) {
 		this.tipoParam.add(tipoParam);
-		toPrint.add(new Pair<String, String>("TipoParam" + String.format("%02d",numParam++), tipoParam));
+		toPrint.add(new Pair<String, String>("TipoParam" + ++numParam, tipoParam));
 	}
 
 	public String getTipoDev() {
