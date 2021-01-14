@@ -61,10 +61,13 @@ public class ALex {
 			if (estado == -2) {
 				GestorErrores.addError(accion, line, "Léxico");
 				// Seguimos leyendo el fichero desde el siguiente caracter al erroneo
-				if (accion.equals("51") || accion.equals("57")) {
+				if (accion.equals("51") ) {
 					car = leer();
 					estado = 0;
-				} else
+				} 
+				else if(accion.equals("57")){
+					estado = 0;
+				}else
 					GestorErrores.salidaPrematura();
 			} else {
 				switch (accion) {

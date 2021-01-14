@@ -1,73 +1,25 @@
-let number uno;    // la inicialización es de implementación opcional
-uno = 1;
-let number UNO;
-UNO = uno;
-
- 
-
-function string salto ()
+let number ent;
+let number cont; 
+cont = 0;
+function number restaHastaN(number n, string texto)
 {
-    return '\n';
+	let number resta;
+	resta = 0;
+	while(cont < 0) {
+		let number f;
+		f = 5;
+		resta = resta - cont -f;
+		cont = ++cont;
+	}
+	alert(texto);
+	return resta;
 }
-
- 
-
-function number FactorialDo (number n)
-{
-    let number factorial ;    // variable local inicializada a uno
-                        // equivale a: factorial = factorial * n; n = n - 1;
-    factorial = 0 - uno - 1;
-     while (n < 0){    
-    factorial = ++n;
-    }    
-    // mientras n no sea 0
-    return factorial;            // devuelve el valor entero de la variable factorial
-}
-
- let number num;
-
-function number FactorialWhile ()
-{
-    let number factorial;    // variables locales: factorial inicializada a 1
-  	 factorial = 1;
-    let    number i;                // variables locales: i inicializada a 0 por omisión
-    while (i < num)            // num es variable global entera sin declarar
-    {
-        factorial = ++i;    // equivale a: i = i + 1; factorial = factorial * i;
-    }
-    return factorial;
-}
-
- 
-
-
-let number For;
-let number Do;
-let number While;    // tres variables globales
-
- 
-
-function imprime (string s, string msg, number f)    // función que recibe 3 argumentos 
-{
-    alert(s);alert(msg);alert(f);
-    alert (salto());    // imprime un salto de línea */
-    return;    //finaliza la ejecución de la función (en este caso, se podría omitir) 
-}
-
- 
-
-function string cadena2(boolean log, string s)
-{
-    if (!log) return s;
-    
-}    
-
- 
-
- 
-
-function imprimeSuma (number v, number w)    
-{
-    alert (v - w);
-    alert (salto());
-} //fin de imprimeSuma
+let string texto = 'Buenos dias';
+let number resta;
+let number _N; //No se puede iniciar el nombre de una variable con un _
+N = 1000;
+resta = restaHastaN(texto,N); // Argumentos erroneos
+let string frase;
+frase = 'Que pequeño sos boludo';
+if(res < -1000)
+	alert(frase);

@@ -1,0 +1,3 @@
+Error Sintáctico: Se esperaba un ';'. En la línea 18
+Error Sintáctico: Símbolo en posición incorrecta. En la línea 18
+Error Semántico: El identificador 'resta' no se ha declarado previamente. En la línea 19
