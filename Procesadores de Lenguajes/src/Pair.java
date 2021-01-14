@@ -28,6 +28,7 @@ public class Pair<L, R> {
 	public boolean equals(Object o) {
 		if (!(o instanceof Pair))
 			return false;
+		@SuppressWarnings("rawtypes")
 		Pair pairo = (Pair) o;
 		return this.left.equals(pairo.getLeft()) && this.right.equals(pairo.getRight());
 	}

@@ -43,11 +43,6 @@ public class Entrada {
 		return numParam;
 	}
 
-	public void setNumParam(int numParam) {
-		this.numParam = numParam;
-		toPrint.add(new Pair<String, String>("NumParam", "" + numParam)); // No hace falta creo
-	}
-
 	public ArrayList<String> getTipoParam() {
 		return tipoParam;
 	}

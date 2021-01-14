@@ -6,7 +6,7 @@ public class Tokens {
 	public static Pair<String, String> toFile(Pair<String, String> token) {
 		FileWriter myWriter;
 		try {
-			myWriter = new FileWriter("tokens.txt", true);
+			myWriter = new FileWriter("Resultados\\tokens.txt", true);
 			myWriter.write("<" + token.getLeft() + "," + token.getRight() + ">\n");
 			myWriter.close();
 		} catch (IOException e) {
@@ -18,7 +18,7 @@ public class Tokens {
 	public static void clearFile() {
 		FileWriter myWriter;
 		try {
-			myWriter = new FileWriter("tokens.txt");
+			myWriter = new FileWriter("Resultados\\tokens.txt");
 			myWriter.write("");
 			myWriter.close();
 		} catch (IOException e) {

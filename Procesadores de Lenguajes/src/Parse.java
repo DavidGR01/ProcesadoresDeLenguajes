@@ -12,7 +12,7 @@ public class Parse {
 	}
 
 	public static void toFile() throws IOException {
-		FileWriter myWriter = new FileWriter("parse.txt");
+		FileWriter myWriter = new FileWriter("Resultados\\parse.txt");
 		myWriter.write("Descendente");
 		for (String elem : secuencia)
 			myWriter.write(" " + elem);

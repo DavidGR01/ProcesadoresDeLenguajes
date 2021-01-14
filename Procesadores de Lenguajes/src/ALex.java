@@ -8,13 +8,12 @@ import java.util.HashMap;
 public class ALex {
 
 	@SuppressWarnings("unchecked")
-	static Pair<Integer, String>[][] matriz = new Pair[23][23];
-	static HashMap<String, Integer> columnas = new HashMap<>(); // sobra?
-	static HashMap<String, String> tablaPR = new HashMap<>();
+	private static Pair<Integer, String>[][] matriz = new Pair[23][23];
+	private static HashMap<String, String> tablaPR = new HashMap<>();
 	private static FileReader fr;
 	private static BufferedReader br;
-	static int car;
-	static TablaSimbolos TS;
+	private static int car;
+	private static TablaSimbolos TS;
 	public static int line = 1; // Variables para llevar la cuenta de la linea en la que estamos
 
 	// Variable auxiliar para los identificadores
@@ -61,13 +60,12 @@ public class ALex {
 			if (estado == -2) {
 				GestorErrores.addError(accion, line, "Léxico");
 				// Seguimos leyendo el fichero desde el siguiente caracter al erroneo
-				if (accion.equals("51") ) {
+				if (accion.equals("51")) {
 					car = leer();
 					estado = 0;
-				} 
-				else if(accion.equals("57")){
+				} else if (accion.equals("57")) {
 					estado = 0;
-				}else
+				} else
 					GestorErrores.salidaPrematura();
 			} else {
 				switch (accion) {
@@ -93,14 +91,11 @@ public class ALex {
 					if (valor > 32767) {
 						GestorErrores.addError("56", line, "Léxico");
 						token = new Pair<String, String>("entero", "0"); // Nos recuperamos del error devolviendo el
-																			// token
-																			// como se esperaba pero con el valor por
-																			// defecto
-					} else {
+																			// token como se esperaba pero con el valor
+																			// por defecto
+					} else
 						token = new Pair<String, String>("entero", valor + "");
-						return Tokens.toFile(token);
-					}
-					break;
+					return Tokens.toFile(token);
 				case "F":
 					token = new Pair<String, String>("incrementador", "");
 					car = leer();
@@ -202,16 +197,12 @@ public class ALex {
 			}
 
 		} while (estado < 7 && estado >= 0);
-		return null;
+		return null; // No se llega nunca aquí
 	}
 
 	public static void closeFile() throws IOException {
 		br.close();
 		fr.close();
-	}
-
-	public static void toFileTS() throws IOException {
-		TS.toFile();
 	}
 
 	private static int leer() {
@@ -226,7 +217,7 @@ public class ALex {
 
 	private static void rellenarMatriz() {
 
-		// Inicialiar todo a -2 y null
+		// Inicializar todo a -2 y null
 		for (int i = 0; i < matriz.length; i++) {
 			for (int j = 0; j < matriz[0].length; j++)
 				matriz[i][j] = new Pair<Integer, String>(-2, null);
