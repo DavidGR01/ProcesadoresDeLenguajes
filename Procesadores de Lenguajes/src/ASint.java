@@ -94,7 +94,7 @@ public class ASint {
 		Tokens.clearFile();
 		TablaSimbolos.clearFile();
 
-		// {TSG = CrearTS, TSactual = TSG, DespG = 0, zonadec = true} P();
+		// {TSG = CrearTS, TSactual = TSG, DespG = 0} P();
 		TSG = new TablaSimbolos();
 		TSActual = TSG;
 		DespG = 0;
@@ -232,7 +232,7 @@ public class ASint {
 			P();
 		} else {
 			GestorErrores.addError("100", ALex.line, SINTACTICO);
-			while (!sigToken.getLeft().equals("$")) 
+			while (!sigToken.getLeft().equals("$"))
 				avanzarYParar();
 		}
 	}
@@ -276,14 +276,9 @@ public class ASint {
 			TSActual = TSG;
 			DespL = 0;
 		} else {
-			System.out.println("F");
 			GestorErrores.addError("101", lineaTemp, SINTACTICO);
 			while (!followF.contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
-			}
-			if (!sigToken.getLeft().equals("$")) { // Sobraria ahora
-				sigToken = ALex.execALex();
-				C();
 			}
 		}
 	}
@@ -294,23 +289,21 @@ public class ASint {
 			Parse.add("6");
 			equipara("number");
 			tipoYAncho[0] = "entero";
-			tipoYAncho[1] = "2";
+			tipoYAncho[1] = "1";
 		} else if (sigToken.getLeft().equals("boolean")) {
 			Parse.add("7");
 			equipara("boolean");
 			tipoYAncho[0] = "logico";
-			tipoYAncho[1] = "2";
+			tipoYAncho[1] = "1";
 		} else if (sigToken.getLeft().equals("string")) {
 			Parse.add("8");
 			equipara("string");
 			tipoYAncho[0] = "cadena";
-			tipoYAncho[1] = "128";
+			tipoYAncho[1] = "64";
 		} else {
-			System.out.println("T");
 			GestorErrores.addError("102", ALex.line, SINTACTICO);// El tipo de dato introducido no existe
-			while (!followT.contains(traducir(sigToken.getLeft()))) {
+			while (!followT.contains(traducir(sigToken.getLeft())))
 				avanzarYParar();
-			}
 		}
 		return tipoYAncho;
 	}
@@ -323,13 +316,13 @@ public class ASint {
 			Parse.add("10");
 			return "void";
 		} else {
-			System.out.println("H");
 			GestorErrores.addError("103", ALex.line, SINTACTICO); // Fallo en el tipo de la funcion
 			while (!followT.contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
 			}
 		}
-		return "FALLO";
+		return "FALLO"; // Nunca de llega a esta linea por lo que en este caso y otros similares
+						// devolveremos esta cadena "FALLO"
 	}
 
 	private static ArrayList<String> A() {
@@ -352,7 +345,6 @@ public class ASint {
 		} else if (followA.contains(traducir(sigToken.getLeft())))
 			Parse.add("12");
 		else {
-			System.out.println("A");
 			GestorErrores.addError("104", ALex.line, SINTACTICO); // Fallo en los argumentos de la funcion
 			while (!followA.contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -433,14 +425,12 @@ public class ASint {
 		} else {
 			res[0] = "";
 			res[1] = "";
-			System.out.println("C");
 			if (sigToken.getLeft().equals("function"))
 				GestorErrores.addError("113", ALex.line, SINTACTICO, true);
 			else
-				GestorErrores.addError("100", ALex.line, SINTACTICO); // Error en la linea...
-			while (!followC.contains(traducir(sigToken.getLeft()))) {
+				GestorErrores.addError("100", ALex.line, SINTACTICO);
+			while (!followC.contains(traducir(sigToken.getLeft())))
 				avanzarYParar();
-			}
 		}
 		return res;
 	}
@@ -455,7 +445,7 @@ public class ASint {
 			equipara("cierraParentesis");
 			String[] tiposS = S();
 
-			if (!tipoE.equals("logico")) 
+			if (!tipoE.equals("logico"))
 				GestorErrores.addError("201", ALex.line, SEMANTICO, true); // Condicion debe ser boolean
 			res[0] = tipoE == "logico" && tiposS[0] == TIPO_OK ? TIPO_OK : TIPO_ERROR; // No se va a dar el tipo_error
 			res[1] = tiposS[1];
@@ -469,7 +459,7 @@ public class ASint {
 			String[] tiposC = C();
 			equipara("cierraCorchete");
 
-			if (!tipoE.equals("logico")) 
+			if (!tipoE.equals("logico"))
 				GestorErrores.addError("201", ALex.line, SEMANTICO, true); // Condicion debe ser boolean
 			res[0] = tipoE == "logico" && tiposC[0] == TIPO_OK ? TIPO_OK : TIPO_ERROR; // No se va a dar el tipo_error
 			res[1] = tiposC[1];
@@ -494,11 +484,9 @@ public class ASint {
 			res[0] = TIPO_OK;
 			res[1] = "void";
 		} else {
-			System.out.println("B");
 			GestorErrores.addError("100", ALex.line, SINTACTICO);
-			while (!follow("B").contains(traducir(sigToken.getLeft()))) { // Error en la linea ...
+			while (!follow("B").contains(traducir(sigToken.getLeft())))
 				avanzarYParar();
-			}
 		}
 		return res;
 	}
@@ -517,7 +505,7 @@ public class ASint {
 			Entrada entrada = TSActual.buscarPos(pos);
 			if (entrada == null)
 				entrada = TSG.buscarPos(pos);
-			if(!entrada.getLexema().equals(auxUltLex))
+			if (!entrada.getLexema().equals(auxUltLex))
 				entrada = TSG.buscarPos(pos);
 			if (entrada.getTipo().equals("function")) {
 				if (!entrada.getTipoParam().equals((ArrayList<String>) uvedoble[1])) {
@@ -535,7 +523,6 @@ public class ASint {
 				} else {
 					GestorErrores.addError("208", lineaTemp, SEMANTICO, true); // No coinciden los tipos en la
 																				// asignacion.
-					// Deberian ser...
 				}
 			}
 		} else if (sigToken.getLeft().equals("alert")) {
@@ -549,8 +536,7 @@ public class ASint {
 				res[0] = TIPO_OK;
 			else
 				GestorErrores.addError("203", lineaTemp, SEMANTICO, true); // Alert solo puede tener argumentos tipo
-																			// entero
-			// o cadena
+																			// entero o cadena
 			res[1] = "void";
 		} else if (sigToken.getLeft().equals("input")) {
 			Parse.add("23");
@@ -573,8 +559,7 @@ public class ASint {
 				res[0] = TIPO_OK;
 			else
 				GestorErrores.addError("204", lineaTemp, SEMANTICO, true); // Input solo puede tener argumentos tipo
-																			// entero
-			// o cadena
+																			// entero o cadena
 			res[1] = "void";
 		} else if (sigToken.getLeft().equals("return")) {
 			Parse.add("24");
@@ -586,9 +571,8 @@ public class ASint {
 		} else {
 			res[0] = "";
 			res[1] = "";
-			System.out.println("S");
 			GestorErrores.addError("105", ALex.line, SINTACTICO);
-			while (!follow("S").contains(traducir(sigToken.getLeft()))) { // Error en la linea...
+			while (!follow("S").contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
 			}
 		}
@@ -613,7 +597,6 @@ public class ASint {
 			res[0] = TIPO_OK; // No se usa
 			res[1] = tiposArgs;
 		} else {
-			System.out.println("W");
 			GestorErrores.addError("106", ALex.line, SINTACTICO);
 			while (!follow("W").contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -634,7 +617,6 @@ public class ASint {
 		} else if (followL.contains(traducir(sigToken.getLeft())))
 			Parse.add("28");
 		else {
-			System.out.println("L");
 			GestorErrores.addError("107", ALex.line, SINTACTICO); // Fallo en la llamada a la función
 			while (!followL.contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -654,7 +636,6 @@ public class ASint {
 			Parse.add("30");
 			return arr;
 		} else {
-			System.out.println("Q");
 			GestorErrores.addError("108", ALex.line, SINTACTICO);
 			while (!followQ.contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -672,7 +653,6 @@ public class ASint {
 			Parse.add("32");
 			return "void";
 		} else {
-			System.out.println("X");
 			GestorErrores.addError("109", ALex.line, SINTACTICO); // Fallo en el return
 			while (!followX.contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -688,7 +668,6 @@ public class ASint {
 			String tipoM = M();
 			return tipoM.equals("logico") ? "logico" : tipoR;
 		} else {
-			System.out.println("E");
 			GestorErrores.addError("110", ALex.line, SINTACTICO); // Fallo en la expresión
 			while (!follow("E").contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -710,7 +689,6 @@ public class ASint {
 		} else if (followM.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("35");
 		} else {
-			System.out.println("M");
 			GestorErrores.addError("110", ALex.line, SINTACTICO); // Fallo en la expresion
 			while (!followM.contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -726,7 +704,6 @@ public class ASint {
 			N(ALex.line);
 			return tipoY;
 		} else {
-			System.out.println("R");
 			GestorErrores.addError("110", ALex.line, SINTACTICO); // Fallo en la expresion
 			while (!follow("R").contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -748,7 +725,6 @@ public class ASint {
 		} else if (followN.contains(traducir(sigToken.getLeft()))) {
 			Parse.add("38");
 		} else {
-			System.out.println("N");
 			GestorErrores.addError("110", lineaTemp, SINTACTICO); // Fallo en la expresion
 			while (!followN.contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -763,7 +739,7 @@ public class ASint {
 			String tipo = Y();
 			if (!tipo.equals("logico"))
 				GestorErrores.addError("206", ALex.line, SEMANTICO, true); // Solo se puede usar negación con
-																			// variables
+																			// variables lógicas
 			else
 				return "logico";
 		} else if (firstU.contains(traducir(sigToken.getLeft()))) {
@@ -771,7 +747,6 @@ public class ASint {
 			String tipo = U();
 			return tipo;
 		} else {
-			System.out.println("Y");
 			GestorErrores.addError("110", ALex.line, SINTACTICO); // Fallo en la expresion
 			while (!follow("Y").contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -795,7 +770,6 @@ public class ASint {
 			String tipos[] = V();
 			return tipos[0];
 		} else {
-			System.out.println("U");
 			GestorErrores.addError("110", ALex.line, SINTACTICO); // Fallo en la expresion
 			while (!follow("U").contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -809,13 +783,14 @@ public class ASint {
 		if (sigToken.getLeft().equals("id")) {
 			Parse.add("43");
 			int pos = Integer.parseInt(sigToken.getRight());
+			String auxUltLexema = ALex.ultLexema;
 			equipara("id");
 			Entrada entrada = TSActual.buscarPos(pos);
 			if (entrada == null)
 				entrada = TSG.buscarPos(pos);
-			if(!entrada.getLexema().equals(ALex.ultLexema))
+			if (!entrada.getLexema().equals(auxUltLexema))
 				entrada = TSG.buscarPos(pos);
-			
+
 			ArrayList<String> seta = Z();
 			if (entrada.getTipo().equals("function")) {
 				if (entrada.getTipoParam().equals(seta)) {
@@ -839,19 +814,18 @@ public class ASint {
 			Parse.add("45");
 			equipara("entero");
 			res[0] = "entero";
-			res[1] = "2";
+			res[1] = "1";
 		} else if (sigToken.getLeft().equals("cadena")) {
 			Parse.add("46");
 			equipara("cadena");
 			res[0] = "cadena";
-			res[1] = "128";
+			res[1] = "64";
 		} else if (sigToken.getLeft().equals("logico")) {
 			Parse.add("47");
 			equipara("logico");
 			res[0] = "logico";
-			res[1] = "2";
+			res[1] = "1";
 		} else {
-			System.out.println("V");
 			GestorErrores.addError("110", ALex.line, SINTACTICO); // Fallo en la expresion
 			while (!follow("V").contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -870,7 +844,6 @@ public class ASint {
 		} else if (followZ.contains(traducir(sigToken.getLeft())))
 			Parse.add("49");
 		else {
-			System.out.println("Z");
 			GestorErrores.addError("110", ALex.line, SINTACTICO); // Fallo en la expresion
 			while (!follow("Z").contains(traducir(sigToken.getLeft()))) {
 				avanzarYParar();
@@ -879,8 +852,7 @@ public class ASint {
 		return new ArrayList<>();
 	}
 
-	private static void equipara(String t) { // Suponemos para la recuperacion de errores que falta aquello con lo que
-												// se equipara
+	private static void equipara(String t) {
 		int lineaTemp = ALex.line;
 		if (sigToken.getLeft().equals(t)) {
 			sigToken = ALex.execALex();
@@ -969,8 +941,7 @@ public class ASint {
 	}
 
 	/**
-	 * BY DAVIDGR01 Devuelve todas las combinaciones de dos elementos de la
-	 * gramatica
+	 * Devuelve todas las combinaciones de dos elementos de la gramatica
 	 * 
 	 * @param nT Lista de no terminales que tienen mas de dos producciones
 	 * @return Lista de Pairs con left = alpha y right = beta
@@ -991,13 +962,12 @@ public class ASint {
 		}
 		return res;
 	}
-//	System.out.println("First("+par.getRight().getLeft()+") ="+firstLeft +" intesección" + "First("+par.getRight().getRight()+") ="+firstRight);
-//	res = !firstLeft.removeAll(firstRight); 
-//	System.out.println("Intersección :"+res);
-//	if (!res) {
-//		System.out.println("La regla "+par.getLeft()+" no cumple la condición LL(1)");
 
-	// Funcion para validar la gramatica
+	/**
+	 * Funcion para validar la gramatica
+	 * 
+	 * @return true/false
+	 */
 	public static boolean LL1() {
 		boolean res = false;
 		ArrayList<String> masDeDosProds = new ArrayList<>();

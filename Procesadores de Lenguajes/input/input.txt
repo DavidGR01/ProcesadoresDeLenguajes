@@ -1,0 +1,21 @@
+let boolean puedoImprimir;  
+puedoImprimir = false;  
+function aitorTilla( number n)  
+{  
+    if( n < 0 )  
+    puedoImprimir = true;  
+    if( !puedoImprimir )  
+    alert('No hay tortilla :(');  
+    if( puedoImprimir )  
+    alert('Hay tortilla :)');  
+}  
+let number n;  
+n = 8;  
+aitorTilla(n);  
+let number i;  
+i = 0;  
+while(i < n){  
+i = ++i;  
+}   
+if ( i < n)  
+alert(i);

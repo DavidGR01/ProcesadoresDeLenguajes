@@ -29,7 +29,7 @@ public class TablaSimbolos {
 	}
 
 	public Entrada buscarPos(int pos) {
-		if(pos>=TS.size())
+		if (pos >= TS.size())
 			return null;
 		return TS.get(pos);
 	}
@@ -84,9 +84,9 @@ public class TablaSimbolos {
 		// Sobreescribe cualquier archivo anterior con el mismo nombre
 		FileWriter writer;
 		try {
-			writer = new FileWriter("TS.txt",true);
+			writer = new FileWriter("Resultados\\TS.txt", true);
 			if (!TS.isEmpty())
-				writer.write("TABLA #" + String.format("%02d",id) + ":\n");
+				writer.write("TABLA #" + String.format("%02d", id) + ":\n");
 			for (Entrada e : TS)
 				writer.write(e.toString());
 			writer.close();
@@ -95,8 +95,13 @@ public class TablaSimbolos {
 		}
 	}
 
+	/**
+	 * Para limpiar los archivos de posibles pasadas ejecuciones
+	 * 
+	 * @throws IOException
+	 */
 	public static void clearFile() throws IOException {
-		FileWriter myWriter = new FileWriter("TS.txt");
+		FileWriter myWriter = new FileWriter("Resultados\\TS.txt");
 		myWriter.write("");
 		myWriter.close();
 	}

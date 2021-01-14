@@ -10,26 +10,43 @@ public class GestorErrores {
 	private static HashMap<String, String> map = new HashMap<>();
 	private static List<String> errores = new ArrayList<>();
 
+	/**
+	 * Error dado un código
+	 * 
+	 * @param cod
+	 * @param linea
+	 * @param tipoError
+	 */
 	public static void addError(String cod, int linea, String tipoError) {
 		String s = "Error " + tipoError + ": " + map.get(cod) + ". En la línea " + linea + "\n";
 		errores.add(s);
 		System.out.println(s);
 	}
 
-	/*
+	/**
 	 * Para errores Semánticos, que paran la ejecución del programa tras imprimir el
 	 * fichero de errores
+	 * 
+	 * @param cod
+	 * @param linea
+	 * @param tipoError
+	 * @param parar
 	 */
-	// TODO Quizas deberiamos parar tambien al detectar errores en declaraciones ya
-	// que no sabemos como de va a comportar despues de estos errores el
-	// recuperador.
 	public static void addError(String cod, int linea, String tipoError, boolean parar) {
 		String s = "Error " + tipoError + ": " + map.get(cod) + ". En la línea " + linea + "\n";
 		errores.add(s);
 		System.out.println(s);
 		salidaPrematura();
 	}
-	
+
+	/**
+	 * Errores dado el texto
+	 * 
+	 * @param texto
+	 * @param linea
+	 * @param tipoError
+	 * @param parar
+	 */
 	public static void addError3(String texto, int linea, String tipoError, boolean parar) {
 		String s = "Error " + tipoError + ": " + texto + ". En la línea " + linea + "\n";
 		errores.add(s);
@@ -37,8 +54,12 @@ public class GestorErrores {
 		salidaPrematura();
 	}
 
-	/*
+	/**
 	 * Para errores en equipara()
+	 * 
+	 * @param texto
+	 * @param linea
+	 * @param tipoError
 	 */
 	public static void addError2(String texto, int linea, String tipoError) {
 		String s = "Error " + tipoError + ": " + texto + ". En la línea " + linea + "\n";
@@ -55,7 +76,7 @@ public class GestorErrores {
 		map.put("55", "Longitud máxima de string superada");
 		map.put("56", "Max entero 32767");
 		map.put("57", "Identificador no puede empezar con número");
-		map.put("100", "Símbolo en posición incorrecta"); // O faltante????
+		map.put("100", "Símbolo en posición incorrecta");
 		map.put("101", "Fallo en la declaración de la función");
 		map.put("102", "El tipo de dato introducido no existe");
 		map.put("103", "Fallo en el tipo de retorno de la función");
@@ -66,8 +87,6 @@ public class GestorErrores {
 		map.put("108", "Se esperaba una coma o un parentesis de cierre");
 		map.put("109", "Fallo en el return");
 		map.put("110", "Fallo en la expresión");
-		map.put("111", "Falta paréntesis de cierre");
-		map.put("112", "Se esperaba un punto y coma");
 		map.put("113", "No se permiten funciones anidadas");
 		map.put("200", "El tipo de retorno de la función no coincide con el que se esperaba");
 		map.put("201", "La condición debe ser de tipo lógico");
@@ -86,7 +105,7 @@ public class GestorErrores {
 		// Sobreescribe cualquier archivo anterior con el mismo nombre
 		FileWriter writer;
 		try {
-			writer = new FileWriter("Errores.txt");
+			writer = new FileWriter("Resultados\\Errores.txt");
 			for (String error : errores)
 				writer.write(error);
 			writer.close();
@@ -94,15 +113,19 @@ public class GestorErrores {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Para parar la ejecución ante errores que no podemos recuperar
 	 */
 	public static void salidaPrematura() {
 		GestorErrores.toFile();
-		System.exit(1);
+		Main.limpiarFicherosEnCasoDeError();
 		Scanner sc = new Scanner(System.in);
+		System.out.println(
+				"Pulse cualquier tecla para terminar");
 		sc.nextLine();
+		sc.close();
+		System.exit(1);
 	}
 
 }
