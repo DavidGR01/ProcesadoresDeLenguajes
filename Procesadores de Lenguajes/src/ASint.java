@@ -510,11 +510,14 @@ public class ASint {
 		if (sigToken.getLeft().equals("id")) {
 			Parse.add("21");
 			int pos = Integer.parseInt(sigToken.getRight());
+			String auxUltLex = ALex.ultLexema;
 			equipara("id");
 			Object[] uvedoble = W();
 
 			Entrada entrada = TSActual.buscarPos(pos);
 			if (entrada == null)
+				entrada = TSG.buscarPos(pos);
+			if(!entrada.getLexema().equals(auxUltLex))
 				entrada = TSG.buscarPos(pos);
 			if (entrada.getTipo().equals("function")) {
 				if (!entrada.getTipoParam().equals((ArrayList<String>) uvedoble[1])) {
