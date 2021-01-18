@@ -566,8 +566,14 @@ public class ASint {
 			equipara("return");
 			String tipo = X();
 			equipara("puntoYcoma");
-			res[0] = TIPO_OK;
-			res[1] = tipo;
+			if (TSActual == TSL) {
+				res[0] = TIPO_OK;
+				res[1] = tipo;
+			} else {
+				res[0] = TIPO_ERROR;
+				res[1] = "";
+				GestorErrores.addError("211", ALex.line, SEMANTICO, true);
+			}
 		} else {
 			res[0] = "";
 			res[1] = "";

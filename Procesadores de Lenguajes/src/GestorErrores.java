@@ -99,6 +99,8 @@ public class GestorErrores {
 		map.put("208", "No coinciden los tipos en la asignación");
 		map.put("209", "El identificador ya está declarado");
 		map.put("210", "El identificador no se ha declarado previamente");
+		map.put("211", "El return está fuera del cuerpo de la función");
+
 	}
 
 	public static void toFile() {
@@ -121,8 +123,7 @@ public class GestorErrores {
 		GestorErrores.toFile();
 		Main.limpiarFicherosEnCasoDeError();
 		Scanner sc = new Scanner(System.in);
-		System.out.println(
-				"Pulse cualquier tecla para terminar");
+		System.out.println("Pulse cualquier tecla para terminar");
 		sc.nextLine();
 		sc.close();
 		System.exit(1);
